@@ -1,0 +1,75 @@
+{% extends 'page/masterPage.html' %}
+
+
+{% block title %}
+  Inicio de Sesion
+{% endblock title %}
+  
+
+{% load static %}
+<!--https://plantillas-gratis.net/2018/09/05/30-formularios-de-inicio-de-sesion-html5-y-css3-gratuitos-para-tu-sitio-web/-->
+{% block content %}
+<section id="login" >
+  <div class="container">
+    <link href="{% static 'day/style.css' %}" rel="stylesheet">
+
+  <div class="login-wrap">
+    <div class="login-html">
+      <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab"> Ingresar </label>
+      <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab"> Registrarse </label>
+      <div class="login-form">
+          <form role="form" action="{% url 'login3' %} " method="post">
+          {% csrf_token %}
+          <div class="sign-in-htm">
+            <div class="group">
+              <label for="user" class="label">Nombre de Usuario</label>
+              <input id="username" name="username" type="text" class="input">
+            </div>
+            <div class="group">
+              <label for="pass" class="label">Clave</label>
+              <input id="password" name="password" type="password" class="input" data-type="password">
+            </div>
+            <div class="group">
+              <input id="check" type="checkbox" class="check" checked>
+              <label for="check"><span class="icon"></span> Seguir Conectado</label>
+            </div>
+            <div class="group">
+              <input type="submit" class="button" value="Entrar">
+            </div>
+            <div class="hr"></div>
+            <div class="foot-lnk">
+              <a href="#forgot">Olvidé mi Contraseña</a>
+          </div>
+        </form>
+        </div>
+        <div class="sign-up-htm">
+          <div class="group">
+            <label for="user" class="label">Username</label>
+            <input id="user" type="text" class="input">
+          </div>
+          <div class="group">
+            <label for="pass" class="label">Password</label>
+            <input id="pass" type="password" class="input" data-type="password">
+          </div>
+          <div class="group">
+            <label for="pass" class="label">Repeat Password</label>
+            <input id="pass" type="password" class="input" data-type="password">
+          </div>
+          <div class="group">
+            <label for="pass" class="label">Email Address</label>
+            <input id="pass" type="text" class="input">
+          </div>
+          <div class="group">
+            <input type="submit" class="button" value="Sign Up">
+          </div>
+          <div class="hr"></div>
+          <div class="foot-lnk">
+            <label for="tab-1">Already Member?</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+{% endblock content %}

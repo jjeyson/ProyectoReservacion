@@ -1,0 +1,98 @@
+{% extends 'management/masterPage.html' %}
+
+{% load static %}
+
+
+{% block title %}
+{{page_title}}
+{% endblock title %}
+    
+
+{% block content %}
+
+
+
+
+
+<div class="card card-primary">
+  <div class="card-header">
+    <h3 class="card-title">{{page_title|upper}}</h3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-6">
+    <div class="card card-primary">
+      <!-- /.card-header -->
+      <!-- form start -->
+      <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="card-body">
+          {{form.as_table}}
+        </div>
+          
+      
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+    <!-- /.card -->
+  </div>
+  <div class="col-lg-6">
+    <div class="card card-primary">
+      <!-- /.card-header -->
+      <!-- form start -->
+      <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="card-body">
+        </div>
+        <div class="card-footer">
+          <a type="button" class="btn btn-primary" onclick="abrir_modal_creacion('{% url 'registrarDetallePaquete' %}');">Agregar Detalle al Tour</a>
+        </div>
+      </form>
+    </div>
+    <h2>Lista del Tour del Paquete</h2>
+    <div class="card-body">
+      <table id="tabla_paquetes" class="table table-bordered table-hover">
+        <thead>
+        <tr>
+          <th>Título</th>
+          <th>Día N°</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tbody>
+            
+            {% if listaDetalles %}
+              
+              {% for obj in listaDetalles %}
+              <tr>
+                <td>{{obj.tituloDetallePaquete}}</td>
+                <td>{{obj.nroDiaPaquete}}</td>
+                <td><a href="" class="btn btn-sm btn-primary">Modificar</a></td>
+                <td><a href="" class="btn btn-sm btn-danger">Eliminar</a></td>
+              </tr>
+              {% endfor %}
+                
+
+            {% else %}
+              <tr><td>No hay Paquetes Disponibles</td></tr>
+            {% endif %}
+              
+              
+          </tbody>
+      </table>
+    </div>
+    
+    <!-- /.card -->
+  </div>
+</div>
+<div class="modal fade" id="creacion" role="dialog">
+
+</div>
+{% endblock content %}
+
+  
+

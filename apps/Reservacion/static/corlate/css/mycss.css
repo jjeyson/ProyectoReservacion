@@ -1,0 +1,19 @@
+item active.oscurecer {
+    background-image: 
+      linear-gradient(
+        rgba(0, 0, 0, 0.5),
+        rgba(0, 0, 0, 0.5)
+      ),
+      url(https://www.comolademo.es/demos/colorear-foto.jpg);
+  height: 480px;
+  width: 720px;
+  }
+
+
+.checked {
+  color: orange;
+}
+.incorrecto {
+  text-decoration:line-through;
+  color: red;
+}

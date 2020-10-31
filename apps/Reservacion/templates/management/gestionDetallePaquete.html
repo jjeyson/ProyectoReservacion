@@ -1,0 +1,43 @@
+{% extends 'management/masterPage.html' %}
+{% load static %}
+{% block title %}
+Biblioteca.dev | Listado de Paquetes
+{% endblock title %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-8">
+                <strong class="card-title">Listado de Paquetes</strong>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-primary" onclick="abrir_modal_creacion('{% url 'registrarDetallePaquete' %}');"> REGISTRAR PAQUETE</button>
+            </div>
+        </div>
+        
+    </div>
+    <div class="table-stats order-table ov-h">
+        <table id="tabla_paquetes" class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Titulo del Detalle</th>
+                    <th>N° Dia</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+            <tbody>               
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal fade" id="creacion" role="dialog">
+
+</div>
+<div class="modal fade" id="edicion" role="dialog">
+
+</div>
+<div class="modal fade" id="eliminacion" role="dialog">
+
+</div>
+{% endblock content %}

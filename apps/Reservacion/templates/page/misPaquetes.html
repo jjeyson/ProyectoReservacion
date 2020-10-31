@@ -1,0 +1,66 @@
+{% extends 'page/masterPage.html' %}
+
+{% load static %}
+
+
+{% block title %}
+    Mis Paquetes
+{% endblock title %}
+    
+
+{% block content %}
+<div class="page-title" style="background-image: url( 'static/corlate/images/portfolio/fondo2.jpg')">
+    <h1>Todos sus Paquetes</h1>
+</div>
+<section id="blog">
+    
+    <div class="blog container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="blog-item">
+                    <a href="#"><img class="img-responsive img-blog" src="{% static 'corlate/images/Turismo/VisitasHistorica.jpg' %}" width="100%" alt="" /></a>
+                    <div class="blog-content">
+                        <h2><a href="blog-item.html">Visitas Historicas</a></h2>
+                        </div>
+                </div>
+                <!--/.blog-item-->
+
+                <div class="blog-item">
+                    <a href="#"><img class="img-responsive img-blog" src="{% static 'corlate/images/Turismo/PlazaDeArmas.jpg' %}" width="100%" alt="" /></a>
+                    <div class="blog-content">
+                        <h2><a href="blog-item.html">Plaza de Armas</a></h2>
+                    </div>
+                </div>
+                <!--/.blog-item-->
+
+                <div class="blog-item">
+                    <a href="#"><img class="img-responsive img-blog" src="{% static 'corlate/images/Turismo/ChanChan.jpg' %}" width="100%" alt="" /></a>
+                    <div class="blog-content">
+                        <h2><a href="blog-item.html">Complejo de Chan Chan</a></h2></div>
+                </div>
+                <!--/.blog-item-->
+                
+            </div>
+            <!--/.col-md-8-->
+                
+            </aside>
+        </div>
+        <!--/.row-->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <ul class="pagination pagination-lg">
+                    <li><a href="#"><i class="fa fa-long-arrow-left"></i></a></li>
+                    <li class="active"><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#"><i class="fa fa-long-arrow-right"></i></a></li>
+                </ul>
+                <!--/.pagination-->
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

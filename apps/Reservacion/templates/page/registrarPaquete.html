@@ -1,0 +1,107 @@
+{% extends 'page/masterPage.html' %}
+
+{% load static %}
+
+
+{% block title %}
+    Registro de Paquete
+{% endblock title %}
+    
+
+{% block content %}
+<div class="page-title" style="background-image: url( 'static/corlate/images/portfolio/fondo2.jpg')">
+    <h1>Registro de Paquete</h1>
+</div>
+<section id="registro">
+    <section id="contact-page">
+        <div class="container">
+            <div class="large-title text-center">        
+                <h2>La agencia Turismo Andre S.A.C. está lista para ayudarte</h2>
+                <p>No aceptamos devoluciones <br> Pero siempre estaremos alli para contactarnos por <a href="{% url 'contactanos' %} "> <strong>aquí</strong></a> </p>
+            </div> 
+            <div class="row contact-wrap"> 
+                <div class="status alert alert-success" style="display: none"></div>
+                <form id="main-contact-form" class="contact-form" name="contact-form" method="post" action="sendemail.php">
+                    <div class="col-sm-5 col-sm-offset-1">
+                        <div class="form-group">
+                            <label>Destino *</label>
+                            <input type="text" name="destino" class="form-control" required="required">
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Entrada *</label>
+                            <input type="date" name="fechaEntrada" class="form-control" required="required">
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Salida</label>
+                            <input type="date" name="fechaSalida" class="form-control" required="required">
+                        </div>
+                        <div class="form-group">
+                            <label>Cantidad de adultos *</label>
+                            <select name="tipoMensaje" id="tipoMensaje">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="1">4</option>
+                                <option value="2">5</option>
+                                <option value="3">6</option>
+                                <option value="1">7</option>
+                                <option value="2">8</option>
+                                <option value="3">9</option>
+                                <option value="3">10</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cantidad de niños *</label>
+                            <select name="tipoMensaje" id="tipoMensaje">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="1">4</option>
+                                <option value="2">5</option>
+                                <option value="3">6</option>
+                                <option value="1">7</option>
+                                <option value="2">8</option>
+                                <option value="3">9</option>
+                                <option value="3">10</option>
+                            </select>
+                        </div>                         
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label>Cantidad de habitaciones *</label>
+                            <select name="tipoMensaje" id="tipoMensaje">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="1">4</option>
+                                <option value="2">5</option>
+                                <option value="3">6</option>
+                                <option value="1">7</option>
+                                <option value="2">8</option>
+                                <option value="3">9</option>
+                                <option value="3">10</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cantidad de Días *</label>
+                            <textarea name="message" id="message" required="required" class="form-control" rows="8"></textarea>
+                        </div>
+                        
+                        {% if user.is_authenticated %}
+                            <div class="form-group">
+                                <p>Señor {{user.first_name}} {{user.last_name}} estamos para atenderlo</p>
+                            </div>
+                        {% endif %}
+                        <div class="form-group">
+                            <button type="submit" name="submit" class="btn btn-primary btn-lg" required="required">Registrar</button>
+                        </div>                        
+                        
+                    </div>
+                </form> 
+            </div><!--/.row-->
+        </div><!--/.container-->
+    </section><!--/#contact-page-->
+</section>
+    
+{% endblock content %}
+    

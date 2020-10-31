@@ -1,0 +1,97 @@
+{% extends 'page/masterPage.html' %}
+
+{% load static %}
+
+
+{% block title %}
+    Agencia
+{% endblock title %}
+    
+
+{% block content %}
+<section id="content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-10 col-sm-offset-1 fadeInDown">
+                <div class="tab-wrap">
+                    <div class="media">
+                        <div class="parrent pull-left">
+                            <ul class="nav nav-tabs nav-stacked">
+                                <li class=""><a href="#tab1" data-toggle="tab" class="analistic-01">DATOS DEL CONTACTO</a></li>
+                                <li class=""><a href="#tab2" data-toggle="tab" class="tehnical">¿POR QUE ELEGIRNOS?</a></li>
+
+                                <li class=""><a href="#tab3" data-toggle="tab" class="tehnical">UBICANOS</a></li>
+                                <li class=""><a href="#tab4" data-toggle="tab" class="tehnical">VIDEOS</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="parrent media-body">
+                            <div class="tab-content">
+                                <div class="tab-pane fade" id="tab1">
+                                    <div class="media">
+                                        <div class="pull-left">
+                                            <img class="img-responsive" src="{% static 'img/frontis.jpg' %}">
+                                        </div>
+                                        <div class="media-body">
+                                            <h2>Datos del contacto</h2>
+                                            <p>
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                 Jr pizarro N° 562 (1/2 Cdra de la Plaza de Armas)
+                                                 <hr>
+                                                <i class="fas fa-mobile-alt "></i> 1-978282606 / 948494066
+                                                <hr>
+                                                <i class="fas fa-phone-square"></i> 044-221-421
+                                                <hr>
+                                                <i class="fas fa-envelope"></i> contactenos@perutogethertravel.com
+                                                
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="tab2">
+                                    <div class="media-body">
+                                        <h2>Trato directo y Confiabilidad</h2>
+                                        <p>
+                                            Tratará con los responsables de la empresa, antes, durante y después del viaje. Monitoreamos nuestros servicios, lo cual permite a nuestros operadores identificar fallas en tiempo real y resolver los incidentes rápidamente, ya que nuestro equipo de profesionales trabaja incansablemente para alcanzar la máxima calidad, determinada por la estabilidad, velocidad y seguridad de los servicios.</p>
+                                        <h2>Excelente Equipo de profesionales de turismo a su servicio</h2>
+                                        <p>Nuestro equipo está integrado por profesionales en Turismo, entusiastas que desempeñan sus tareas con talento, eficiencia, seriedad y esmero. Trabajamos para alcanzar la satisfacción de nuestros clientes.</p>
+                                        <h2>Trayectoria y Experiencia</h2>
+                                        <p>Hace 10 años que trabajamos realizando un turismo responsable, destacándonos a lo largo de este tiempo por brindar servicios confiables, estables, seguros con atención profesional y personalizada. Nuestra experiencia nos permite ofrecerle un buen servicio para que viva la experiencia al máximo.</p>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane fade" id="tab3">
+                                    <div class="pull-left">
+                                        <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+                                            <form method="POST" action="">{% csrf_token %}
+                                                {{ form.media }}
+                                                {{ form.as_p }}
+                                            </form> -->
+                                        <img class="img-responsive" src="{% static 'corlate/images/Agencia/ubicacion.jpg' %}">
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="tab4">
+                                    <div class="pull-left">
+                                        <iframe width="560" height="315" src="https://www.youtube.com/embed/JPe2mwq96cw" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!--/.tab-content-->
+                        </div>
+                        <!--/.media-body-->
+                    </div>
+                    <!--/.media-->
+                </div>
+                <!--/.tab-wrap-->
+            </div>
+            <!--/.col-sm-6-->
+
+        </div>
+        <!--/.row-->
+    </div>
+    <!--/.container-->
+</section>
+<!--/#content-->
+{% endblock content %}
+    

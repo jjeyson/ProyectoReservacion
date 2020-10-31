@@ -1,0 +1,86 @@
+{% extends "management/masterPage.html" %}
+
+{% load static %}
+
+
+{% block title %}
+  Gestion de Lugar
+{% endblock title %}
+  
+
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Lugares Turisticos</h1>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+    <a href="#" type="button" class="btn btn-lg btn-warning">Nuevo</a>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example2" class="table table-bordered table-hover">
+                  <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Ciudad</th>
+                    <th>Aeropuerto</th>
+                    <th>Acciones</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <tbody>
+                        <tr>
+                            <td>Lugar 1</td>
+                            <td>Ciudad 1</td>
+                                <td>Aeropuerto</td>
+                            <td><a href="#" class="btn btn-sm btn-primary">Modificar</a></td>
+                            <td><a href="#" class="btn btn-sm btn-danger">Eliminar</a></td>
+                        </tr>
+                        <tr>
+                            <td>Lugar 2</td>
+                            <td>Ciudad 2</td>
+                                <td>Aeropuerto 3</td>
+                            <td><a href="#" class="btn btn-sm btn-primary">Modificar</a></td>
+                            <td><a href="#" class="btn btn-sm btn-danger">Eliminar</a></td>
+                        </tr>
+                        <tr>
+                            <td>Lugar 3</td>
+                            <td>Ciudad 3</td>
+                                <td>Aeropuerto 3</td>
+                            <td><a href="#" class="btn btn-sm btn-primary">Modificar</a></td>
+                            <td><a href="#" class="btn btn-sm btn-danger">Eliminar</a></td>
+                        </tr>
+                        <tr>
+                            <td>Lugar 4</td>
+                            <td>Ciudad 4</td>
+                                <td>Aeropuerto 4</td>
+                            <td><a href="#" class="btn btn-sm btn-primary">Modificar</a></td>
+                            <td><a href="#" class="btn btn-sm btn-danger">Eliminar</a></td>
+                        </tr>
+                        <tr>
+                            <td>Lugar 5</td>
+                            <td>Ciudad 5</td>
+                                <td>Aeropuerto 5</td>
+                            <td><a href="#" class="btn btn-sm btn-primary">Modificar</a></td>
+                            <td><a href="#" class="btn btn-sm btn-danger">Eliminar</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+{% endblock%}

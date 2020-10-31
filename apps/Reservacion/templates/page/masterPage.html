@@ -1,0 +1,210 @@
+<!--Source  Media Root and Media URL: http://blog.enriqueoriol.com/2014/07/upload-de-imagenes-con-django.html -->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>
+    {% block title %}
+        Bienvenidos
+    {% endblock title %}
+     </title>   
+     <script src="https://kit.fontawesome.com/c7760fb283.js" crossorigin="anonymous"></script>
+
+    <!-- core CSS -->
+    <link href="{% static 'corlate/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href=" {% static 'corlate/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href=" {% static 'corlate/css/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'corlate/css/prettyPhoto.css' %}" rel="stylesheet">
+    <link href="{% static 'corlate/css/owl.carousel.min.css' %} " rel="stylesheet">
+    <link href="{% static 'corlate/css/icomoon.css' %} " rel="stylesheet">
+    <link href="{% static 'corlate/css/main.css' %} " rel="stylesheet">
+    <link href="{% static 'corlate/css/responsive.css' %} " rel="stylesheet">
+    <link href="{% static 'corlate/css/mycss.css' %} " rel="stylesheet"> 
+
+    <!-- <link href="{% static 'corlate/css1/bootstrap.min.css' %} " rel="stylesheet"> -->
+    <!-- <link href="{% static 'corlate/css1/font-awesome.min.css' %} " rel="stylesheet"> -->
+    <link href="{% static 'corlate/css1/style.css' %} " rel="stylesheet">
+    <!-- <link href="{% static 'corlate/css1/animate.css' %} " rel="stylesheet"> -->
+    <!-- <link href="{% static 'corlate/css1/skin-blue.css' %} " rel="stylesheet"> -->
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
+    <link rel="shortcut icon" href="{% static 'img/icono.ico' %} ">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'corlate/images/ico/apple-touch-icon-144-precomposed.png' %} ">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href=" {% static 'corlate/images/ico/apple-touch-icon-114-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'corlate/images/ico/apple-touch-icon-72-precomposed.png' %} ">
+    <link rel="apple-touch-icon-precomposed" href="{% static 'corlate/images/ico/apple-touch-icon-57-precomposed.png' %} ">
+    <!-- Font Awesome Icon Library -ESTRELLAS DE RATING -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<!--/head-->
+
+<body class="homepage">
+    <header id="header">
+        
+
+        <nav class="navbar navbar-inverse" role="banner">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{% url 'index' %}"><img style="width:100px; height:60px;" src=" {% static 'img/Logogrande_.perutogethertravel.png' %} " alt="logo"></a>
+                </div>
+
+                <div class="collapse navbar-collapse navbar-right">
+                    <ul class="nav navbar-nav">
+                        <li class="{% if request.path == '/index' %}active {% endif %}"><a href="{% url 'index' %}">Inicio</a></li>
+                        <li class="{% if request.path == '/agencia' %}active {% endif %}"><a href="{% url 'agencia' %}">Agencia</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Nosotros <i class="fa fa-angle-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{% url 'conocenos' %}">Conócenos</a></li>
+                                <li><a href="{% url 'contactanos' %}">Contáctanos</a></li>
+                            </ul>
+                        </li>
+                        
+                        {% if user.is_authenticated %}
+                            <li class="{% if request.path == '/misPaquetes' %}active {% endif %}"><a href="{% url 'misPaquetes' %}">Mis Paquetes</a></li>  
+                        {% else %}
+                            <li class="{% if request.path == '/login' %}active {% endif %}"><a href="{% url 'login' %}">Inicio de Sesion</a></li>
+                        {% endif %}
+                        
+                        {% if user.is_authenticated and  user.is_staff == True %}
+                            <li class="{% if request.path == '/panelControl' %}active {% endif %}"><a href="{% url 'panelControl' %}">Panel de Control</a></li>
+                        {% endif %}
+                        {% if user.is_authenticated%}
+                            <li class=""><a href="{% url 'logout' %} "><i class="fas fa-power-off"></i> Cerrar Sesión</a></li>
+                        {% endif %}
+                            
+                        
+                    </ul>
+                </div>
+            </div>
+            <!--/.container-->
+        </nav>
+        <!--/nav-->
+
+    </header>
+    <!--/header-->
+
+    
+    {% block content %}
+        
+    {% endblock content %}
+    
+    <section id="bottom">
+        <div class="container fadeInDown" data-wow-duration="1000ms" data-wow-delay="600ms">
+            <div class="row">
+                <div class="col-md-2">
+                    <a href="#" class="footer-logo">
+                        <img src="{% static 'img/Logogrande_.perutogethertravel.png' %} " alt="logo">
+                    </a>
+                </div>
+                <div class="col-md-10">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="widget">
+                                <h3>Empresa</h3>
+                                <ul>
+                                    <li><a href="{% url 'conocenos' %}">Conócenos</a></li>
+                                    <li><a href="#">Políticas de privacidad</a></li>
+                                    <li><a href="#">Contáctanos</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!--/.col-md-3-->
+
+                        <div class="col-md-3 col-sm-6">
+                            <div class="widget">
+                                <h3>Nuestros convenios</h3>
+                                <ul>
+                                    <li><a href="https://www.zankyou.com.pe/f/jh-travel-613731">JH Travel</a></li>
+                                    <li><a href="https://www.zankyou.com.pe/f/trujillo-travel-610146">Trujillo Travel</a></li>
+                                    <li><a href="https://www.zankyou.com.pe/f/gilberth-tours-661426">Gilberth Tours</a></li>
+                                    <li><a href="https://www.zankyou.com.pe/f/contunor-661429">Contunor</a></li>
+                                    <li><a href="https://www.zankyou.com.pe/f/travelers-tours-peru-401003">Travelers Tours Perú</a></li>
+                                    <li><a href="https://www.zankyou.com.pe/f/trujillo-tours-661431">Trujillo Tours</a></li>
+                                    <li><a href="https://www.zankyou.com.pe/f/peru-costa-travel-661432">Perú Costa Travel</a></li>
+                                    <li><a href="https://www.zankyou.com.pe/f/north-peru-tours-602960">North Peru Tours</a></li>
+                                    <li><a href="https://www.zankyou.com.pe/f/peru-travel-tour-operador-661866">Perú Travel – Tour Operador</a></li>
+                                    <li><a href="https://www.zankyou.com.pe/f/ittsa-bus-661439">Ittsa Bus</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!--/.col-md-3-->
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </section>
+    <!--/#bottom-->
+
+    <footer id="footer" class="midnight-blue">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6">
+                    &copy; 2020 <a target="_blank" href="http://wwww.facebook.com" title="Pagina Oficial de Facebook"> <strong>UPN - Prueba</strong></a> con Derechos Reservados
+                </div>
+                <div class="col-sm-6">
+                    <ul class="pull-right">
+                        <li><a href="{% url 'index' %}">Inicio</a></li>
+                        <li><a href="#">Agencia</a></li>
+                        <li><a href="#">Conócenos</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'misPaquetes' %}">Mis Paquetes</a></li>
+                        
+                    
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Iniciar Sesion</a></li>
+                    {% endif %}
+
+                    
+                    {% if user.is_authenticated and user.is_staff == True %}
+                        <li><a href="{% url 'panelControl' %}">Panel de Control</a></li>
+                    {% endif %}
+                     
+                            
+                        
+                    </ul>
+                </div>
+                <br>
+                <p>
+                    <div class="col-sm-6 col-xs-12">
+                        <div class="top-number">
+                            <p><i class="fa fa-phone-square"></i>1-978282606 / 948494066</p> 
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <div class="social">
+                            <ul class="social-share">
+                                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                                <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+                                <li><a href="#"><i class="fa fa-skype"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </p>
+                
+            </div>
+        </div>
+    </footer>
+    <!--/#footer-->
+
+    <script src="{% static 'corlate/js/jquery.js' %}"></script>
+    <script src="{% static 'corlate/js/bootstrap.min.js' %} "></script>
+    <script src="{% static 'corlate/js/jquery.prettyPhoto.js' %} "></script>
+    <script src="{% static 'corlate/js/owl.carousel.min.js' %} "></script>
+    <script src="{% static 'corlate/js/jquery.isotope.min.js' %} "></script>
+    <script src="{% static 'corlate/js/main.js' %} "></script>
+
+</body>
+
+</html>

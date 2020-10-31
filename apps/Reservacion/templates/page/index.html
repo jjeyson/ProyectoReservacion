@@ -1,0 +1,254 @@
+{% extends 'page/masterPage.html' %}
+
+{% load static %}
+
+
+{% block title %}
+    {{page_title}}
+{% endblock title %}
+    
+
+{% block content %}
+    <section id="main-slider" class="no-margin">
+        <div class="carousel slide">
+            <ol class="carousel-indicators">
+                <li data-target="#main-slider" data-slide-to="0" class="active"></li>
+                <li data-target="#main-slider" data-slide-to="1"></li>
+                <li data-target="#main-slider" data-slide-to="2"></li>
+            </ol>
+            <div class="carousel-inner">
+
+                <div class="item active" style="background-image: url('https://www.perutogethertravel.com/wp-content/uploads/2018/12/machuu.jpg')">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="carousel-content">
+                                    <h1 class="animation animated-item-1">Conozca los mejores lugares de Trujillo</h1>
+                                    <div class="animation animated-item-2">
+                                        Los mejores lugares para compartir con la familia y con los amigos. !Que esperáis¡
+                                    </div>
+                                    <a class="btn-slide animation animated-item-3" href="#">Conozca más!!!</a>
+                                    <a class="btn-slide white animation animated-item-3" href="#">Conozca los mejores lugares</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!--/.item  -->
+
+                <div class="item" style="background-image: url('https://www.perutogethertravel.com/wp-content/uploads/2019/07/28dejulioalta.jpg')">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="carousel-content">
+                                    <h1 class="animation animated-item-1">Más y más lugares</h1>
+                                    <div class="animation animated-item-2">
+                                        Que esperas!!!.
+                                    </div>
+                                    <a class="btn-slide white animation animated-item-3" href="#">Conocer más</a>
+                                    <a class="btn-slide animation animated-item-3" href="#">Empezar ahora</a>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="item" style="background-image: url('https://www.perutogethertravel.com/wp-content/uploads/2018/10/Agencia-de-viaje-trujillo.jpg')">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="carousel-content">
+                                    <h1 class="animation animated-item-1">Más y más lugares</h1>
+                                    <div class="animation animated-item-2">
+                                        Que esperas!!!.
+                                    </div>
+                                    <a class="btn-slide white animation animated-item-3" href="#">Conocer más</a>
+                                    <a class="btn-slide animation animated-item-3" href="#">Empezar ahora</a>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <!--/.item -->
+                <div class="item" style="background-image: url('https://www.perutogethertravel.com/wp-content/uploads/2018/10/img_trujillo.jpg')">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="carousel-content">
+                                    <h1 class="animation animated-item-1">Más y más lugares</h1>
+                                    <div class="animation animated-item-2">
+                                        Que esperas!!!.
+                                    </div>
+                                    <a class="btn-slide white animation animated-item-3" href="#">Conocer más</a>
+                                    <a class="btn-slide animation animated-item-3" href="#">Empezar ahora</a>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--/.carousel-inner-->
+        </div>
+        <div class="item" style="background-image: url('https://www.perutogethertravel.com/wp-content/uploads/2018/10/img_trujillo.jpg')">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="carousel-content">
+                                    <h1 class="animation animated-item-1">Más y más lugares</h1>
+                                    <div class="animation animated-item-2">
+                                        Que esperas!!!.
+                                    </div>
+                                    <a class="btn-slide white animation animated-item-3" href="#">Conocer más</a>
+                                    <a class="btn-slide animation animated-item-3" href="#">Empezar ahora</a>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--/.carousel-inner-->
+        </div>
+        <div class="item" style="background-image: url('https://www.perutogethertravel.com/wp-content/uploads/2018/12/slider-piurrra.jpg')">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="carousel-content">
+                            <h1 class="animation animated-item-1">Más y más lugares</h1>
+                            <div class="animation animated-item-2">
+                                Que esperas!!!.
+                            </div>
+                            <a class="btn-slide white animation animated-item-3" href="#">Conocer más</a>
+                            <a class="btn-slide animation animated-item-3" href="#">Empezar ahora</a>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/.carousel-inner-->
+</div>
+        <!--/.carousel-->
+        <a class="prev hidden-xs hidden-sm" href="#main-slider" data-slide="prev">
+            <i class="fa fa-chevron-left"></i>
+        </a>
+        <a class="next hidden-xs hidden-sm" href="#main-slider" data-slide="next">
+            <i class="fa fa-chevron-right"></i>
+        </a>
+    </section>
+    <!--/#main-slider-->
+    
+    
+    {% if user.is_authenticated %}
+
+    <div class="page-title" style="background-image: url('static/corlate/images/portfolio/fondo2.jpg')">
+        <h1>Bienvenido de nuevo {{user.first_name}} {{user.last_name}}</h1>
+
+        
+             
+    </div>
+    <section id="recent-works">
+        <div class="container">
+            <div class="center fadeInDown">
+                <h2>Paquetes Recomendados para ti, {{user.first_name}}</h2>
+                <p class="lead">Lo mejor para ti</p>
+            </div>
+            <div class="row">
+                
+                {% if object_list %}
+                    {% for obj in object_list %}
+                    <div class="col-md-4 col-sm-6 single-team">
+                        <div class="inner">
+                            <div class="team-img">
+                                <!-- <a href="{% url 'registro' %}"><img src="https://www.perutogethertravel.com/wp-content/uploads/2019/06/FIESTAS-PATRIAS-CHACHAPOYAS1-700x466.jpg" alt=""></a>  -->
+                                <a href="{% url 'registro' %}"><img src="{{ obj.get_imagePaquete }}" alt=""></a>
+                            </div>
+                            <div class="team-content">
+                                <h4></h4>
+                                <span class="desg"><strong>{{obj.tituloPaquete}}</strong> </span>
+                                <br>
+                                <span class="desg">{{obj.nDiasPaquete}} Días</span>
+                                <br/>
+                                <p><span class="desg"> <h1><strong>{{obj.precioPaquete}} </strong></h1> </span></p>
+                                <div class="clearfix text-center">
+                                    <a href="{% url 'detallePaquete' %}" class="btn btn-primary">Ver Detalle</a>
+                                    <a class="btn btn-primary" href="{% url 'registro' %}">Registrarte</a>
+                                </div>
+                                <h2>Calificación</h2>
+                                <span class="fa fa-star checked"></span>
+                                <span class="fa fa-star checked"></span>
+                                <span class="fa fa-star checked"></span>
+                                <span class="fa fa-star checked"></span>
+                                <span class="fa fa-star checked"></span> 
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No Existe paquetes Disponibles</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% else %}
+    <div class="page-title" style="background-image: url('static/corlate/images/portfolio/fondo2.jpg')">
+        <h1>Nuestros mejores paquetes turisticos</h1>
+    </div>
+
+    <section id="team-area">
+        <div class="container">
+            <div class="center fadeInDown">
+                <h2>Nuestras ofertas de Paquetes Turisticos</h2>
+                <p class="lead">Regístrate <a href="{% url 'login' %} "><strong>aqui</strong> </a> y averigua lo mejor para ti</p>
+            </div>
+            <div class="row">
+                
+                {% if object_list %}
+                    {% for obj in object_list %}
+                    <div class="col-md-4 col-sm-6 single-team">
+                        <div class="inner">
+                            <div class="team-img">
+                                <!-- <a href="{% url 'registro' %}"><img src="https://www.perutogethertravel.com/wp-content/uploads/2019/06/FIESTAS-PATRIAS-CHACHAPOYAS1-700x466.jpg" alt=""></a>  -->
+                                <a href="{% url 'registro' %}"><img src="{{ obj.get_imageAvatar }}" alt=""></a>
+                            </div>
+                            <div class="team-content">
+                                <h4></h4>
+                                <span class="desg"><strong>{{obj.tituloPaquete}}</strong> </span>
+                                <br>
+                                <span class="desg">{{obj.nDiasPaquete}} Días</span>
+                                <br/>
+                                <p><span class="desg"> <h1><strong>{{obj.precioPaquete}} </strong></h1> </span></p>
+                                <div class="clearfix text-center">
+                                    <a href="{% url 'detallePaquete' %}" class="btn btn-primary">Ver Detalle</a>
+                                    <a class="btn btn-primary" href="{% url 'registro' %}">Registrarte</a>
+                                </div>
+                                <h2>Calificación</h2>
+                                <span class="fa fa-star checked"></span>
+                                <span class="fa fa-star checked"></span>
+                                <span class="fa fa-star checked"></span>
+                                <span class="fa fa-star checked"></span>
+                                <span class="fa fa-star checked"></span> 
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No Existe paquetes Disponibles</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    <!--/#portfolio-item-->
+
+{% endblock content %}
+    

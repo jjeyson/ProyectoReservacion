@@ -1,0 +1,83 @@
+{% extends 'management/masterPage.html' %}
+
+{% load static %}
+
+
+{% block title %}
+    Búsqueda
+{% endblock title %}
+    
+
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+
+<section class="content">
+  <div class="container-fluid">
+      <h2 class="text-center display-4">Buscar</h2>
+      <div class="row">
+          <div class="col-md-8 offset-md-2">
+              <form action="simple-results.html">
+                  <div class="input-group">
+                      <input type="search" class="form-control form-control-lg" placeholder="Buscar...">
+                      <div class="input-group-append">
+                          <button type="submit" class="btn btn-lg btn-default">
+                              <i class="fa fa-search"></i>
+                          </button>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</section>
+
+  <!-- Main content -->
+  <section class="content">
+          <div class="row mt-3">
+              <div class="col-md-10 offset-md-1">
+                  <div class="list-group">
+                      <div class="list-group-item">
+                          <div class="row">
+                              <div class="col px-4">
+                                  <div>
+                                      <h3>Resultados</h3>
+                                      </div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="list-group-item">
+                          <div class="row">
+                              <div class="col-auto">
+                                  <img class="img-fluid" src="{% static 'corlate/images/Turismo/HuacaDelSolYDeLaLuna.jpg' %}" alt="Photo" style="max-height: 160px;">
+                              </div>
+                              <div class="col px-4">
+                                  <div>
+                                      <div class="float-right">2020-04-20 10:14pm</div>
+                                      <h3>Huaca del Sol y La Luna</h3>
+                                      <p class="mb-0">Lo Mejor de lo Mejor</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="list-group-item">
+                        <div class="row">
+                            <div class="col-auto">
+                                <img class="img-fluid" src="{% static 'corlate/images/Turismo/CasaDelMariscalDeOrbegoso.jpg' %}" alt="Photo" style="max-height: 160px;">
+                            </div>
+                            <div class="col px-4">
+                                <div>
+                                    <div class="float-right">2020-04-20 10:14pm</div>
+                                    <h3>Casa Orbegozo</h3>
+                                    <p class="mb-0">Paseando por el Centro</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+
+{% endblock content %}
+ 

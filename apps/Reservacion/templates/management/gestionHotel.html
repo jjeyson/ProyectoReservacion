@@ -1,0 +1,86 @@
+{% extends "management/masterPage.html" %}
+
+{% load static %}
+
+
+{% block title %}
+  Gestion Hotel
+{% endblock title %}
+  
+
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Hoteles</h1>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+    <a href="#" type="button" class="btn btn-lg btn-warning">Nuevo</a>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example2" class="table table-bordered table-hover">
+                  <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Ciudad</th>
+                    <th>Telefono</th>
+                    <th>Acciones</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <tbody>
+                        <tr>
+                            <td>A1</td>
+                            <td>B1</td>
+                                <td>C1 &nbsp; D1</td>
+                            <td><a href="#" class="btn btn-sm btn-primary">Modificar</a></td>
+                            <td><a href="#" class="btn btn-sm btn-danger">Eliminar</a></td>
+                        </tr>
+                        <tr>
+                            <td>A1</td>
+                            <td>B1</td>
+                                <td>C1 &nbsp; D1</td>
+                            <td><a href="#" class="btn btn-sm btn-primary">Modificar</a></td>
+                            <td><a href="#" class="btn btn-sm btn-danger">Eliminar</a></td>
+                        </tr>
+                        <tr>
+                            <td>A1</td>
+                            <td>B1</td>
+                                <td>C1 &nbsp; D1</td>
+                            <td><a href="#" class="btn btn-sm btn-primary">Modificar</a></td>
+                            <td><a href="#" class="btn btn-sm btn-danger">Eliminar</a></td>
+                        </tr>
+                        <tr>
+                            <td>A1</td>
+                            <td>B1</td>
+                                <td>C1 &nbsp; D1</td>
+                            <td><a href="#" class="btn btn-sm btn-primary">Modificar</a></td>
+                            <td><a href="#" class="btn btn-sm btn-danger">Eliminar</a></td>
+                        </tr>
+                        <tr>
+                            <td>A1</td>
+                            <td>B1</td>
+                                <td>C1 &nbsp; D1</td>
+                            <td><a href="#" class="btn btn-sm btn-primary">Modificar</a></td>
+                            <td><a href="#" class="btn btn-sm btn-danger">Eliminar</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+{% endblock%}

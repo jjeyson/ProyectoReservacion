@@ -1,0 +1,96 @@
+{% extends "management/masterPage.html" %}
+
+{% load static %}
+
+
+{% block title %}
+  Gestión de Paquete
+{% endblock title %}
+
+
+{% block superior %}
+<li class="nav-item d-none d-sm-inline-block">
+  <a href="{% url 'registrarPaquete' %}" class="nav-link active"><strong>Nuevo {{entity}}</strong> </a>
+</li>
+</ul>
+<!-- SEARCH FORM -->
+<form class="form-inline ml-3">
+<div class="input-group input-group-sm">
+  <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+  <div class="input-group-append">
+    <button class="btn btn-navbar" type="submit">
+      <i class="fas fa-search"></i>
+    </button>
+  </div>
+</div>
+</form>
+{% endblock superior %}
+  
+
+
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Paquete Turistico</h1>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+    <a href="{% url 'registrarPaquete' %}" type="button" class="btn btn-lg btn-warning">Nuevo</a>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example2" class="table table-bordered table-hover">
+                  <thead>
+                  <tr>
+                    <th>Título</th>
+                    <th>Numero de días</th>
+                    <th>Precio</th>
+                    <th>Moneda</th>
+                    <th>Disponibilidad</th>
+                    <th>Visitas</th>
+                    <th>Acciones</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <tbody>
+                      
+                      {% if object_list %}
+                        
+                        {% for obj in object_list %}
+                        <tr>
+                          <td>{{obj.tituloPaquete}}</td>
+                          <td>{{obj.nDiasPaquete}}</td>
+                          <td>{{obj.precioPaquete}}</td>
+                          <td>{{obj.unidadPorPrecioPaquete}}</td>
+                          <td>{{obj.disponibilidadPaquete}}</td>
+                          <td>{{obj.visitasPaquete}}</td>
+                          <td><a href="{% url 'modificarPaquete' obj.idPaquete %}" class="btn btn-sm btn-primary">Modificar</a></td>
+                          <td><a href="{% url 'eliminarPaquete' obj.idPaquete %}" class="btn btn-sm btn-danger">Eliminar</a></td>
+                      </tr>
+                        {% endfor %}
+                          
+
+                      {% else %}
+                        <tr><td>No hay Paquetes Disponibles</td></tr>
+                      {% endif %}
+                        
+                        
+                    </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+{% endblock%}

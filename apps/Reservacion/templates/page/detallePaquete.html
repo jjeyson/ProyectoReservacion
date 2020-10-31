@@ -1,0 +1,218 @@
+{% extends 'page/masterPage.html' %}
+
+{% load static %}
+
+
+{% block title %}
+    {{page_title}}
+{% endblock title %}
+    
+
+{% block content %}
+<!-- <section id="middle" class="skill-area" style="background-image: url(https://www.perutogethertravel.com/wp-content/uploads/2019/06/FIESTAS-PATRIAS-CHACHAPOYAS1.jpg)"> -->
+<section id="middle" class="skill-area" style="background-image: url( {{paquete.get_imagePaquete}} )">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 fadeInDown">
+                <div class="skill">
+                    <h2> <strong>{{paquete.precioPaquete}}</strong>
+                        <br>
+                        {% if paquete.unidadPorPrecioPaquete == 'p' %}
+                            Por persona
+                        {% else %}
+                            Otro
+                        {% endif %}
+                            
+                        
+                    </h2>
+                    <span style="text-decoration:line-through;">
+                        {{paquete.get_precioAntiguo}}
+                    </span>
+                </div>
+            </div>
+            <!--/.col-sm-6-->
+            </div>
+            
+        </div>
+        <!--/.row-->
+    </div>
+    <!--/.container-->
+</section>
+<!--/#services-->
+<section id="blog">
+<div class="blog container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="blog-item">
+                <div class="row">
+                    <div class="center fadeInDown">
+                        <h2> {{paquete.tituloPaquete}}</h2>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="media services-wrap fadeInDown">
+                            <div class="pull-left">
+                                <i class="fas fa-clock fa-3x"></i>
+                                <p><h4 class="media-heading">{{paquete.nDiasPaquete}} días</h4></p>
+                                
+                            </div>
+                                
+                        </div>
+                    </div>
+    
+                    <div class="col-md-3 col-sm-6">
+                        <div class="media services-wrap fadeInDown">
+                            <div class="pull-left">
+                                <i class="fas fa-id-card fa-3x"></i>
+                                <p><h4 class="media-heading">Años {{paquete.edadMinimaPaquete}}+</h4></p>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="col-md-3 col-sm-6">
+                        <div class="media services-wrap fadeInDown">
+                            <div class="pull-left">
+                                <i class="far fa-calendar fa-3x"></i>
+                                <p><h4 class="media-heading">{{paquete.mesPaquete}}</h4></p>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="col-md-3 col-sm-6">
+                        <div class="media services-wrap fadeInDown">
+                            <div class="pull-left">
+                                <i class="fas fa-user-friends fa-3x"></i>
+                                <p><h4 class="media-heading">Disponibilidad {{paquete.disponibilidadPaquete}}</h4></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+                
+
+            
+                
+            <div class="blog-item">
+                <div class="blog-content">
+                    <h2>Detalles del Tour</h2>
+                    
+                    {% if listaDetalles %}
+                        {% for obj in listaDetalles %}
+                        <h3><strong> {{paquete.nDiasPaquete}} Días / {{paquete.nNochesPaquete}} Noches</strong></h3>
+                        <h3><strong>DETALLE DEL PAQUETE.</strong> </h3>
+                        <h3><strong>DÍA {{obj.nroDiaPaquete}}:  {{obj.tituloDetallePaquete}}</strong></h3>
+                        <p>{{obj.descripcionDetallePaquete}}</p>
+                        <img src="{{obj.get_imageDetallePaquete}}" alt="telesferico">
+                        {% endfor %}
+                    {% else %}
+                        <h1>No Hay detalles del Tour Disponible</h1>
+                    {% endif %}
+                </div>
+            </div>
+            <!--/.blog-item-->
+            <div class="blog-item">
+                <div class="blog-content">
+                    <hr>
+                    <div class="row">
+                        <aside class="col-md-4">
+                            <a href="#" class="blog_cat">INCLUYE</a>
+                        </aside>
+                        <div class="col-md-8">
+                            <ul>
+                                <li>Traslados terminal terrestre – Hotel - Terminal</li>
+                                <li>3 Noches de hotel 3 estrellas en habitación doble/Matrimonial</li>
+                                <li>Guía Oficial de Turismo / Movilidad Turística local</li>
+                                <li>3 Desayunos + 4 Almuerzos turísticos por persona</li>
+                                <li>4 Días de Tours, detallados en el Programa</li>
+                                <li>Ticket de Ingreso a los Atractivos Turísticos</li>
+                                <li>Implemento para visitar Caverna(Botas, Linterna)</li>
+                                <li>Tickets en las telecabinas apara Kuelap</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <aside class="col-md-4">
+                            <a href="#" class="blog_cat">NO INCLUYE</a>
+                        </aside>
+                        <div class="col-md-8">
+                            <ul>
+                                <li>Pasajes de ciudad de origen viceversa</li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <!--/.col-md-8-->
+
+        <aside class="col-md-4">
+            <div class="widget archieve">
+                <h1>
+                    <span>S/.</span>
+                   {{paquete.precioPaquete}}
+                </h1>
+                <h2><span>
+                    
+                    {% if paquete.unidadPorPrecio == 'p' %}
+                        Por Persona
+                    {% else %}
+                        Otro
+                    {% endif %}
+                </span></h2>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <ul class="blog_archieve">
+                            <div class="form-group">
+                                <div class="single-pricing featured">
+                                    <a href="{% url 'registro' %}">Registrar este tour</a>
+                                </div>
+                            </div>
+                            <i class="fas fa-eye fa-2x"></i>
+                            <br>
+                            <p>Este tour ha sido visto en la semana pasada 
+                                <br>  
+                                <strong>
+                                    {{paquete.visitasPaquete | upper}}
+                                    veces
+                                </strong>
+                                 
+                            </p>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!--/.archieve-->
+
+            <div class="widget popular_post">
+                <div class="single-pricing">
+                    <a href="{% url 'registro' %}">
+                        <i class="fas fa-envelope "></i>
+                        &nbsp;Compártelo
+                    </a>
+                </div>
+            </div>
+            <div class="widget popular_post">
+                
+                <h3>Nuestros Datos</h3>
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> Jr pizarro N° 562 (1/2 Cdra de la Plaza de Armas)</li>
+                    <li><i class="fas fa-mobile-alt"></i> 1-978282606 / 948494066</li>
+
+                </ul>
+            </div>
+        </aside>
+    </div>
+    <!--/.row-->
+</div>
+</section>
+<!--/#blog-->
+
+{% endblock content %}
+    

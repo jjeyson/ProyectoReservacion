@@ -1,0 +1,34 @@
+{% extends 'page/masterPage.html' %}
+
+{% load static %}
+
+
+{% block title %}
+    Panel de Control
+{% endblock title %}
+    
+
+{% block content %}
+       
+<section class="pricing">
+    <div class="large-title text-center">        
+        <h2>Panel de Control </h2>
+    </div> 
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1 text-center">
+                <div class="single-pricing featured">
+                    <div class="clearfix">
+                        <ul>
+                            <li><i class="fa fa-pie-chart"></i> Lugares</li>
+                            <li><i class="fa fa-paper-plane"></i> Hoteles</li>
+                            <li><i class="fa fa-cloud"></i> y más</li>
+                        </ul>
+                    </div>
+                    <a href="{% url 'busqueda' %}">Ir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
