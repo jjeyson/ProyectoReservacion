@@ -4,19 +4,19 @@
 
 
 {% block title %}
-  Gestión de Paquete
+  {{page_title}}
 {% endblock title %}
 
 
 {% block superior %}
 <li class="nav-item d-none d-sm-inline-block">
-  <a href="{% url 'registrarPaquete' %}" class="nav-link active"><strong>Nuevo {{entity}}</strong> </a>
+  <a href="{% url 'reservacion:registrarPaquete' %}" class="nav-link active"><strong>Nuevo {{entity}}</strong> </a>
 </li>
 </ul>
 <!-- SEARCH FORM -->
 <form class="form-inline ml-3">
 <div class="input-group input-group-sm">
-  <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+  <input class="form-control form-control-navbar" type="search" placeholder="Buscar un {{entity}}" aria-label="Search">
   <div class="input-group-append">
     <button class="btn btn-navbar" type="submit">
       <i class="fas fa-search"></i>
@@ -34,21 +34,42 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Paquete Turistico</h1>
+            <h1>{{page_title}}</h1>
           </div>
         </div>
       </div><!-- /.container-fluid -->
     </section>
-    <a href="{% url 'registrarPaquete' %}" type="button" class="btn btn-lg btn-warning">Nuevo</a>
+    <!-- <a href="" type="button" class="btn btn-lg btn-warning">Nuevo</a> -->
 
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
+        
         <div class="row">
           <div class="col-12">
             <div class="card">
               <div class="card-header">
               </div>
+              <div class="card-footer">
+              <nav aria-label="Contacts Page Navigation">
+                {% if is_paginated %}
+                <ul class="pagination justify-content-center m-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                    {% endif %}
+      
+                    {% for i in paginator.page_range %}
+                        <li {% if page_obj.number == i %} class="page-item active" {% endif %}>
+                            <a class="page-link" href="?page={{i}}">{{ i }}</a>
+                        </li>
+                    {% endfor %}
+      
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+              </nav>
               <!-- /.card-header -->
               <div class="card-body">
                 <table id="example2" class="table table-bordered table-hover">
@@ -76,8 +97,8 @@
                           <td>{{obj.unidadPorPrecioPaquete}}</td>
                           <td>{{obj.disponibilidadPaquete}}</td>
                           <td>{{obj.visitasPaquete}}</td>
-                          <td><a href="{% url 'modificarPaquete' obj.idPaquete %}" class="btn btn-sm btn-primary">Modificar</a></td>
-                          <td><a href="{% url 'eliminarPaquete' obj.idPaquete %}" class="btn btn-sm btn-danger">Eliminar</a></td>
+                          <td><a href="{% url 'reservacion:modificarPaquete' obj.idPaquete %}" class="btn btn-sm btn-primary">Modificar</a></td>
+                          <td><a href="{% url 'reservacion:eliminarPaquete' obj.idPaquete %}" class="btn btn-sm btn-danger">Eliminar</a></td>
                       </tr>
                         {% endfor %}
                           

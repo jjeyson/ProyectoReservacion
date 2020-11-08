@@ -169,8 +169,8 @@
                     <div class="col-md-4 col-sm-6 single-team">
                         <div class="inner">
                             <div class="team-img">
-                                <!-- <a href="{% url 'registro' %}"><img src="https://www.perutogethertravel.com/wp-content/uploads/2019/06/FIESTAS-PATRIAS-CHACHAPOYAS1-700x466.jpg" alt=""></a>  -->
-                                <a href="{% url 'registro' %}"><img src="{{ obj.get_imagePaquete }}" alt=""></a>
+                                <!-- <a href="{% url 'reservacion:registrarReservacion' %}"><img src="https://www.perutogethertravel.com/wp-content/uploads/2019/06/FIESTAS-PATRIAS-CHACHAPOYAS1-700x466.jpg" alt=""></a>  -->
+                                <a href="{% url 'reservacion:registrarReservacion' %}"><img src="{{ obj.get_imagePaquete }}" alt="Imagen de {{obj.tituloPaquete}}" width="400" height="300"></a>
                             </div>
                             <div class="team-content">
                                 <h4></h4>
@@ -180,8 +180,8 @@
                                 <br/>
                                 <p><span class="desg"> <h1><strong>{{obj.precioPaquete}} </strong></h1> </span></p>
                                 <div class="clearfix text-center">
-                                    <a href="{% url 'detallePaquete' %}" class="btn btn-primary">Ver Detalle</a>
-                                    <a class="btn btn-primary" href="{% url 'registro' %}">Registrarte</a>
+                                    <a href="{% url 'reservacion:detallePaquete' obj.pk %}" class="btn btn-primary">Ver Detalle</a>
+                                    <a class="btn btn-primary" href="{% url 'reservacion:registrarReservacion' %}">Registrarte</a>
                                 </div>
                                 <h2>Calificación</h2>
                                 <span class="fa fa-star checked"></span>
@@ -208,7 +208,7 @@
         <div class="container">
             <div class="center fadeInDown">
                 <h2>Nuestras ofertas de Paquetes Turisticos</h2>
-                <p class="lead">Regístrate <a href="{% url 'login' %} "><strong>aqui</strong> </a> y averigua lo mejor para ti</p>
+                <p class="lead">Regístrate <a href="{% url 'reservacion:login' %} "><strong>aqui</strong> </a> y averigua lo mejor para ti</p>
             </div>
             <div class="row">
                 
@@ -217,8 +217,8 @@
                     <div class="col-md-4 col-sm-6 single-team">
                         <div class="inner">
                             <div class="team-img">
-                                <!-- <a href="{% url 'registro' %}"><img src="https://www.perutogethertravel.com/wp-content/uploads/2019/06/FIESTAS-PATRIAS-CHACHAPOYAS1-700x466.jpg" alt=""></a>  -->
-                                <a href="{% url 'registro' %}"><img src="{{ obj.get_imageAvatar }}" alt=""></a>
+                                <!-- <a href="{% url 'reservacion:registrarReservacion' %}"><img src="https://www.perutogethertravel.com/wp-content/uploads/2019/06/FIESTAS-PATRIAS-CHACHAPOYAS1-700x466.jpg" alt=""></a>  -->
+                                <a href="{% url 'reservacion:registrarReservacion' %}"><img src="{{ obj.get_imageAvatar }}" alt=""></a>
                             </div>
                             <div class="team-content">
                                 <h4></h4>
@@ -228,8 +228,8 @@
                                 <br/>
                                 <p><span class="desg"> <h1><strong>{{obj.precioPaquete}} </strong></h1> </span></p>
                                 <div class="clearfix text-center">
-                                    <a href="{% url 'detallePaquete' %}" class="btn btn-primary">Ver Detalle</a>
-                                    <a class="btn btn-primary" href="{% url 'registro' %}">Registrarte</a>
+                                    <a href="{% url 'reservacion:detallePaquete' obj.pk %}" class="btn btn-primary">Ver Detalle</a>
+                                    <a class="btn btn-primary" href="{% url 'reservacion:login' %}">Regístrate</a>
                                 </div>
                                 <h2>Calificación</h2>
                                 <span class="fa fa-star checked"></span>

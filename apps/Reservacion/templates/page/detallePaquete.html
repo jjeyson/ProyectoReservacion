@@ -10,14 +10,14 @@
 
 {% block content %}
 <!-- <section id="middle" class="skill-area" style="background-image: url(https://www.perutogethertravel.com/wp-content/uploads/2019/06/FIESTAS-PATRIAS-CHACHAPOYAS1.jpg)"> -->
-<section id="middle" class="skill-area" style="background-image: url( {{paquete.get_imagePaquete}} )">
+<section id="middle" class="skill-area" style="background-image: url( {{object.get_imagePaquete}} )">
     <div class="container">
         <div class="row">
             <div class="col-sm-12 fadeInDown">
                 <div class="skill">
-                    <h2> <strong>{{paquete.precioPaquete}}</strong>
+                    <h2> <strong>{{object.precioPaquete}}</strong>
                         <br>
-                        {% if paquete.unidadPorPrecioPaquete == 'p' %}
+                        {% if object.unidadPorPrecioPaquete == 'p' %}
                             Por persona
                         {% else %}
                             Otro
@@ -26,7 +26,7 @@
                         
                     </h2>
                     <span style="text-decoration:line-through;">
-                        {{paquete.get_precioAntiguo}}
+                        {{object.get_precioAntiguo}}
                     </span>
                 </div>
             </div>
@@ -46,13 +46,13 @@
             <div class="blog-item">
                 <div class="row">
                     <div class="center fadeInDown">
-                        <h2> {{paquete.tituloPaquete}}</h2>
+                        <h2> {{object.tituloPaquete}} {{request.session.paqueteID}} </h2>
                     </div>
                     <div class="col-md-3 col-sm-6">
                         <div class="media services-wrap fadeInDown">
                             <div class="pull-left">
                                 <i class="fas fa-clock fa-3x"></i>
-                                <p><h4 class="media-heading">{{paquete.nDiasPaquete}} días</h4></p>
+                                <p><h4 class="media-heading">{{object.nDiasPaquete}} días</h4></p>
                                 
                             </div>
                                 
@@ -63,7 +63,7 @@
                         <div class="media services-wrap fadeInDown">
                             <div class="pull-left">
                                 <i class="fas fa-id-card fa-3x"></i>
-                                <p><h4 class="media-heading">Años {{paquete.edadMinimaPaquete}}+</h4></p>
+                                <p><h4 class="media-heading">Años {{object.edadMinimaPaquete}}+</h4></p>
                             </div>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                         <div class="media services-wrap fadeInDown">
                             <div class="pull-left">
                                 <i class="far fa-calendar fa-3x"></i>
-                                <p><h4 class="media-heading">{{paquete.mesPaquete}}</h4></p>
+                                <p><h4 class="media-heading">{{object.mesPaquete}}</h4></p>
                             </div>
                         </div>
                     </div>
@@ -81,7 +81,7 @@
                         <div class="media services-wrap fadeInDown">
                             <div class="pull-left">
                                 <i class="fas fa-user-friends fa-3x"></i>
-                                <p><h4 class="media-heading">Disponibilidad {{paquete.disponibilidadPaquete}}</h4></p>
+                                <p><h4 class="media-heading">Disponibilidad {{object.disponibilidadPaquete}}</h4></p>
                             </div>
                         </div>
                     </div>
@@ -100,11 +100,14 @@
                     
                     {% if listaDetalles %}
                         {% for obj in listaDetalles %}
-                        <h3><strong> {{paquete.nDiasPaquete}} Días / {{paquete.nNochesPaquete}} Noches</strong></h3>
+                        <h3><strong> {{paquete.nDiasPaquete}} Días / {{object.nNochesPaquete}} Noches</strong></h3>
                         <h3><strong>DETALLE DEL PAQUETE.</strong> </h3>
                         <h3><strong>DÍA {{obj.nroDiaPaquete}}:  {{obj.tituloDetallePaquete}}</strong></h3>
                         <p>{{obj.descripcionDetallePaquete}}</p>
-                        <img src="{{obj.get_imageDetallePaquete}}" alt="telesferico">
+                        
+                        {% if obj.imagenDetallePaquete %}
+                            <img src="{{obj.get_imagenDetallePaquete}}" alt="">
+                        {% endif %}
                         {% endfor %}
                     {% else %}
                         <h1>No Hay detalles del Tour Disponible</h1>
@@ -170,12 +173,12 @@
                         <ul class="blog_archieve">
                             <div class="form-group">
                                 <div class="single-pricing featured">
-                                    <a href="{% url 'registro' %}">Registrar este tour</a>
+                                    <a href="{% url 'reservacion:registro' %}">Registrar este tour</a>
                                 </div>
                             </div>
                             <i class="fas fa-eye fa-2x"></i>
                             <br>
-                            <p>Este tour ha sido visto en la semana pasada 
+                            <p>Este tour ha sido visto 
                                 <br>  
                                 <strong>
                                     {{paquete.visitasPaquete | upper}}
@@ -192,7 +195,7 @@
 
             <div class="widget popular_post">
                 <div class="single-pricing">
-                    <a href="{% url 'registro' %}">
+                    <a href="{% url 'reservacion:registro' %}">
                         <i class="fas fa-envelope "></i>
                         &nbsp;Compártelo
                     </a>

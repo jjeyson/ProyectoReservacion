@@ -8,16 +8,22 @@
 {% endblock title %}
     
 
+
+{% block superior %}
+    <li class="nav-item d-none d-sm-inline-block">
+    <a href="{% url 'reservacion:gestionPaquete' %}" class="nav-link active"><strong>Lista de {{entity}}s</strong> </a>
+  </li>
+</ul>
+{% endblock superior %}
+  
+
 {% block content %}
-
-
-
 
 
 <div class="card card-primary">
   <div class="card-header">
-    <h3 class="card-title">{{page_title|upper}}</h3>
-  </div>
+  
+    <h3 class="card-title">{{page_title|upper}} {{request.session.paqueteID}}</h3>
 </div>
 
 <div class="row">
@@ -30,8 +36,9 @@
         <div class="card-body">
           {{form.as_table}}
         </div>
-          
-      
+        <div class="card footer">
+          <a onclick="abrir_modal_creacion('{% url 'reservacion:registrarCondicion' %}');" class="btn btn-sm btn-default">Nueva Condicion</a>
+        </div>
         <div class="card-footer">
           <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
@@ -43,14 +50,24 @@
     <div class="card card-primary">
       <!-- /.card-header -->
       <!-- form start -->
-      <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="card-body">
+      
+      {% if page_title == 'Registro de Paquetes' %}
+      <div class="card-body">
+        <div class="alert alert-danger alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <h5><i class="icon fas fa-ban"></i> Alerta</h5>
+          No puede agregar el Detalle del Tour. Vuelva a intentarlo al actualizar el paquete.
         </div>
-        <div class="card-footer">
-          <a type="button" class="btn btn-primary" onclick="abrir_modal_creacion('{% url 'registrarDetallePaquete' %}');">Agregar Detalle al Tour</a>
-        </div>
-      </form>
+      </div>
+      {% else %}
+      <div class="card-footer">
+        <a onclick="abrir_modal_creacion('{% url 'reservacion:registrarDetallePaquete' %}');" class="btn btn-sm btn-primary">
+          Agregar Detalle
+        </a>
+      </div>
+      {% endif %}
+        
+          
     </div>
     <h2>Lista del Tour del Paquete</h2>
     <div class="card-body">
@@ -70,9 +87,9 @@
               {% for obj in listaDetalles %}
               <tr>
                 <td>{{obj.tituloDetallePaquete}}</td>
-                <td>{{obj.nroDiaPaquete}}</td>
-                <td><a href="" class="btn btn-sm btn-primary">Modificar</a></td>
-                <td><a href="" class="btn btn-sm btn-danger">Eliminar</a></td>
+                <td>{{obj.nroDiaDetallePaquete}}</td>
+                <td><a onclick="abrir_modal_edicion('{% url 'reservacion:modificarDetallePaquete' obj.pk %}');" class="btn btn-sm btn-primary">Modificar</a></td>
+                <td><a onclick="abrir_modal_eliminacion('{% url 'reservacion:eliminarDetallePaquete' obj.pk %}');" class="btn btn-sm btn-danger">Eliminar</a></td>
               </tr>
               {% endfor %}
                 
@@ -90,6 +107,15 @@
   </div>
 </div>
 <div class="modal fade" id="creacion" role="dialog">
+
+</div>
+<div class="modal fade" id="editar" role="dialog">
+
+</div>
+<div class="modal fade" id="creacionCondicion" role="dialog">
+
+</div>
+<div class="modal fade" id="eliminacion" role="dialog">
 
 </div>
 {% endblock content %}

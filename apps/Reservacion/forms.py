@@ -2,11 +2,27 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
 from .models import *
 from apps.Reservacion.tuplas import *
 
 
+class ReservacionForm(forms.ModelForm):
+    """Form definition for Reservacion."""
+
+    class Meta:
+        """Meta definition for Reservacionform."""
+
+        model = Reservacion
+        fields = ('estadoReservacion','precioReservacion')
+        #readonly_fields = ['fechaRegistroReservacion','fechaEntradaReservacion','fechaSalidaReservacion']
+
+
 class RegistrarPaqueteForm(forms.ModelForm):
+    condicion_paquete = forms.ModelMultipleChoiceField(
+        queryset=Condicion.objects.filter(estadoCondicion= True),
+        
+       )
     estadoPaquete = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
     class Meta:
         model = Paquete
@@ -25,6 +41,7 @@ class RegistrarPaqueteForm(forms.ModelForm):
             'mesPaquete':'Mes Disponible',
             'disponibilidadPaquete':'Disponibilidad',
             'imagenPaquete':'Imagen del Paquete',
+            'condicion_paquete':'Condiciones',
             'estadoPaquete':'Activo',
         }
         widgets = {
@@ -42,6 +59,30 @@ class RegistrarPaqueteForm(forms.ModelForm):
             'visitasPaquete': forms.NumberInput(attrs={'class': 'form-control','id':'visitasPaquete','disabled': True, 'default':0}),
             'nHorasPaquete': forms.NumberInput(attrs={'class': 'form-control','id':'nHorasPaquete'}),
         }
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('instance'):
+            initial = kwargs.setdefault('initial', {})
+            initial['condicion_paquete'] = [t.pk for t in
+                kwargs['instance'].condicion_paquete.all()]
+
+        forms.ModelForm.__init__(self, *args, **kwargs)
+    
+    def save(self, commit=True):
+        instance = forms.ModelForm.save(self, False)
+        old_save_m2m = self.save_m2m
+        def save_m2m():
+            old_save_m2m()
+            # This is where we actually link the pizza with toppings
+            instance.condicion_paquete.clear()
+            print("Esta son las condiciones Seleccionadas")
+            for obj in self.cleaned_data['condicion_paquete']:
+                instance.condicion_paquete.add(obj)
+                print(obj)
+        self.save_m2m = save_m2m
+        instance.save()
+        self.save_m2m()
+        return instance
+
     
 
 
@@ -197,21 +238,18 @@ class Form_ModificarUsuario(forms.ModelForm):
 class DetallePaqueteForm(forms.ModelForm):
     """Formulario de detalle de Paquete."""
     estadoDetallePaquete = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
-    # paquete_detallePaquete = forms.ModelMultipleChoiceField(
-    #     queryset=DetallePaquete.objects.all(),
-        
-    #    )
+    paquete_detallePaquete = forms.ModelChoiceField(label='IDPaquete',queryset=Paquete.objects.all())
     class Meta:
         """Meta definition for DetallePaqueteform."""
 
         model = DetallePaquete
-        fields = ('nroDiaPaquete', 'tituloDetallePaquete','paquete_detallePaquete','descripcionDetallePaquete','imagenDetallePaquete')
+        fields = ('nroDiaDetallePaquete', 'tituloDetallePaquete','paquete_detallePaquete','descripcionDetallePaquete','imagenDetallePaquete')
         widgets = {
             'tituloDetallePaquete': forms.TextInput(
                 attrs = {
                     'class':'form-control'
                 }),
-            'nroDiaPaquete': forms.NumberInput(
+            'nroDiaDetallePaquete': forms.NumberInput(
                 attrs = {
                     'class':'form-control'
                 }),
@@ -222,8 +260,35 @@ class DetallePaqueteForm(forms.ModelForm):
                 }),
         #ordering = ['-fecha']
             }
+    # def __init__(self,*args,**kwargs):
+    #     pass
+        # session_paqueteID = kwargs.pop('session_paqueteID')
+        #self.fields['paquete_detallePaquete'].queryset = Rate.objects.filter(company=company)
+        # self.fields['paquete_detallePaquete'] = forms.ModelChoiceField(queryset=Paquete.objects.get(idPaquete=session_paqueteID))
+        #forms.ModelMultipleChoiceField(label='IDPaquete',widget=forms.HiddenInput(),initial=self.request.session['paqueteID'])
+    
+class CondicionForm(forms.ModelForm):
+    """Formulario de detalle de Paquete."""
+    estadoCondicion = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
+    
+    class Meta:
+        """Meta definition for DetallePaqueteform."""
 
-
+        model = Condicion
+        fields = ('tituloCondicion','descripcionCondicion','estadoCondicion')
+        widgets = {
+            'tituloCondicion': forms.TextInput(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Ingrese el titulo',
+                }),
+            'descripcionCondicion': forms.Textarea(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Ingrese la descripción',
+                })
+        #ordering = ['-fecha']
+            }
 
 class UploadImageForm(forms.ModelForm):
 

@@ -40,39 +40,30 @@
                           <div class="row">
                               <div class="col px-4">
                                   <div>
-                                      <h3>Resultados</h3>
+                                      <h3>{{page_subtitle}}</h3>
                                       </div>
                               </div>
                           </div>
                       </div>
-                      <div class="list-group-item">
+                      
+                      {% for obj in listaPaquetes %}
+                          <div class="list-group-item">
                           <div class="row">
                               <div class="col-auto">
-                                  <img class="img-fluid" src="{% static 'corlate/images/Turismo/HuacaDelSolYDeLaLuna.jpg' %}" alt="Photo" style="max-height: 160px;">
+                                  <img class="img-fluid" src="{{obj.get_imageAvatar}}" alt="Photo" style="max-height: 160px;max-width: 160px;">
                               </div>
                               <div class="col px-4">
                                   <div>
                                       <div class="float-right">2020-04-20 10:14pm</div>
-                                      <h3>Huaca del Sol y La Luna</h3>
-                                      <p class="mb-0">Lo Mejor de lo Mejor</p>
+                                      <h3>{{obj.tituloPaquete}}</h3>
+                                      <p class="mb-0"> {{obj.visitasPaquete}} Veces</p>
                                   </div>
                               </div>
                           </div>
                       </div>
-                      <div class="list-group-item">
-                        <div class="row">
-                            <div class="col-auto">
-                                <img class="img-fluid" src="{% static 'corlate/images/Turismo/CasaDelMariscalDeOrbegoso.jpg' %}" alt="Photo" style="max-height: 160px;">
-                            </div>
-                            <div class="col px-4">
-                                <div>
-                                    <div class="float-right">2020-04-20 10:14pm</div>
-                                    <h3>Casa Orbegozo</h3>
-                                    <p class="mb-0">Paseando por el Centro</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                      {% endfor %}
+                          
+                      
                   </div>
               </div>
           </div>

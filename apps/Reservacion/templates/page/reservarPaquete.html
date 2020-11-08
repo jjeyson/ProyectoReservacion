@@ -4,20 +4,20 @@
 
 
 {% block title %}
-    Registro de Paquete
+    {{page_title}}
 {% endblock title %}
     
 
 {% block content %}
 <div class="page-title" style="background-image: url( 'static/corlate/images/portfolio/fondo2.jpg')">
-    <h1>Registro de Paquete</h1>
+    <h1>{{page_title}}</h1>
 </div>
 <section id="registro">
     <section id="contact-page">
         <div class="container">
             <div class="large-title text-center">        
                 <h2>La agencia Turismo Andre S.A.C. está lista para ayudarte</h2>
-                <p>No aceptamos devoluciones <br> Pero siempre estaremos alli para contactarnos por <a href="{% url 'contactanos' %} "> <strong>aquí</strong></a> </p>
+                <p>No aceptamos devoluciones <br> Pero siempre estaremos alli para contactarnos por <a href="{% url 'reservacion:contactanos' %} "> <strong>aquí</strong></a> </p>
             </div> 
             <div class="row contact-wrap"> 
                 <div class="status alert alert-success" style="display: none"></div>

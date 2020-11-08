@@ -1,6 +1,7 @@
 import json
+import itertools
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView, CreateView, ListView, DeleteView, UpdateView
+from django.views.generic import TemplateView, CreateView, ListView, DeleteView, UpdateView, DetailView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
@@ -9,9 +10,11 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse
+from django.db.models import Count
 from .forms import *
 from .models import *
 from .tuplas import *
+
 # Create your views here.
 
 
@@ -33,15 +36,23 @@ class IndexListView(ListView):
         return context
 
 
-class DetallePaqueteView(TemplateView):
+
+class DetallePaqueteDetailView(DetailView):
+    model = DetallePaquete
     template_name = "page/detallePaquete.html"
+    model = Paquete
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['paquete'] = Paquete.objects.get(idPaquete= 1)
-        context['listaDetalles'] = DetallePaquete.objects.all()
+        if "paqueteID" in self.request.session:
+            del self.request.session['num_visits']
+            obj = Paquete.objects.get(idPaquete=self.object.pk)
+            num_visits =  obj.visitasPaquete #self.request.session.get('num_visits', 0)
+            self.request.session['num_visits'] = num_visits + 1
+            Paquete.objects.filter(idPaquete=self.object.pk).update(visitasPaquete=self.request.session['num_visits'])
+        #self.request.session['paqueteID'] = self.object.pk
+        context['listaDetalles'] = DetallePaquete.objects.filter(paquete_detallePaquete = self.object.pk)
         context['page_title'] = 'Detalle del Paquete'
-        context['moneda'] = MONEDA
         return context
 
 class Conocenos(TemplateView):
@@ -68,9 +79,18 @@ class Login2(LoginView):
         context["title"] = "Iniciar Sesion"
         return context
 
-class RegistroPaqueteView(TemplateView):
-    template_name = "page/registrarPaquete.html"
 
+
+class ReservacionCreateView(CreateView):
+    model = Reservacion
+    template_name = "page/reservarPaquete.html"
+    form_class = ReservacionForm
+    def get_context_data(self, **kwargs):
+        context = super(ReservacionCreateView,self).get_context_data(**kwargs)
+        context["page_title"] = 'Registra tu '+Reservacion._meta.verbose_name.title()
+        context["entity"] = Reservacion._meta.verbose_name.title() 
+        return context
+    
 
 
 class SignUpView(CreateView):
@@ -101,6 +121,32 @@ class Busqueda(TemplateView):
     template_name = "management/busqueda.html"
 
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_subtitle"] = "Recien Agregados"
+        context["listaPaquetes"] = Paquete.objects.order_by('idPaquete')[:2]
+        return context
+    
+
+
+# @login_required
+# def buscar_libro(request):
+#     if(request.GET.get("txt_buscar")):
+#         #mensaje = "Libro Buscado: %r"%request.GET["txt_nombre"]
+#         #libro = request.GET["txt_buscar"]
+#         query = request.GET.get("txt_buscar")
+#         if len(query)>50:
+#             mensaje = "Titulo demasiado Largo, porfavor vuelva a intentarlo"
+#         else:
+#             #resultado = Libro.objects.filter(tituloLibro__resumenLibro__icontains = libro
+#             #).distinct()
+#             querys = (Q(tituloLibro__icontains=query) | Q(resumenLibro__icontains=query))
+#             #querys |= Q(editorialLibro__icontains=query)
+
+#             libros = Libro.objects.filter(querys)
+#             return render(request,"GestionPrestamo/form_Busqueda_Libro.html", {'libros':libros,"query":query})
+
+
 class GestionHotel(TemplateView):
     template_name = "management/gestionHotel.html"
 
@@ -113,6 +159,19 @@ class PaqueteListView(ListView):
     model = Paquete
     template_name = "management/gestionPaquete.html"
     queryset = Paquete.objects.filter(estadoPaquete = True)
+    paginate_by = 10
+    def get_context_data(self, **kwargs):
+        """
+        Datos que se enviaran al template
+        """
+        context = super(PaqueteListView,self).get_context_data(**kwargs)
+
+        # pq = Paquete.objects.get(idPaquete= self.request.session.get('paqueteID'))
+        # print(pq)
+
+        context['page_title'] = "Lista de "+ Paquete._meta.verbose_name_plural.title()
+        context['entity'] = Paquete._meta.verbose_name.title()
+        return context
 
 class DetallePaqueteListView(ListView):
     model = DetallePaquete
@@ -127,12 +186,11 @@ class PaqueteCreateView(CreateView,LoginRequiredMixin):
     model = Paquete
     template_name = "management/registrarPaquete.html"
     form_class = RegistrarPaqueteForm
-    success_url = reverse_lazy('gestionPaquete')
+    success_url = reverse_lazy('reservacion:gestionPaquete')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Registro de Paquetes'
-        context['listaDetalles'] = DetallePaquete.objects.filter(estadoDetallePaquete=True,paquete_detallePaquete=1)
-        print(context['listaDetalles'])
+        context['entity'] = 'Paquete'
         return context
     def get(self, request, *args,**kwargs):
         self.object= None
@@ -142,19 +200,22 @@ class PaqueteCreateView(CreateView,LoginRequiredMixin):
     def form_valid(self, form):
         paquete = form.save(commit=False)
         paquete.save()
-        return redirect('gestionPaquete')
+        return redirect('reservacion:gestionPaquete')
 
 
 class PaqueteUpdateView(UpdateView):    
     model = Paquete
     form_class = RegistrarPaqueteForm
     template_name = 'management/registrarPaquete.html'
-    sucess_url = reverse_lazy('gestionPaquete')
+    sucess_url = reverse_lazy('reservacion:gestionPaquete')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.request.user.paqueteID = self.object.idPaquete
-        context['page_title'] = 'Registro de Paquetes'
-        context['listaDetalles'] = DetallePaquete.objects.filter(estadoDetallePaquete=True, paquete_detallePaquete=self.request.user.paqueteID)
+        #paqueteID = self.request.session.get('paqueteID', 0)
+        if "paqueteID" in self.request.session:
+            self.request.session['paqueteID'] = self.object.pk
+        context['page_title'] = 'Modificar Paquete'
+        context['entity'] = 'Paquete'
+        context['listaDetalles'] = DetallePaquete.objects.filter(estadoDetallePaquete=True, paquete_detallePaquete=self.request.session['paqueteID'])
         return context
     def get(self,request,*args,**kwargs):
         self.object = self.get_object()
@@ -165,27 +226,32 @@ class PaqueteUpdateView(UpdateView):
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.save()
-        return redirect('gestionPaquete')
+        return redirect('reservacion:gestionPaquete')
+    def post(self, request, **kwargs):
+        # request.POST = request.POST.copy()
+        # request.POST['some_key'] = 'some_value'
+        return super(PaqueteUpdateView, self).post(request, **kwargs)
 
 
 class UsuarioListView(ListView):
     model = Usuario
     template_name = "management/gestionUsuario.html"
     queryset = Usuario.objects.filter(is_active = True).order_by('-first_name')
+    paginate_by = 10
     def get_queryset(self):
         queryset = super(UsuarioListView, self).get_queryset()
         return queryset.filter(is_active=True).order_by('-first_name')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Lista de Usuarios'
-        context['entity'] = 'Usuario'
+        context['page_title'] = 'Lista de '+Usuario._meta.verbose_name_plural.title()
+        context['entity'] = Usuario._meta.verbose_name.title()
         return context
 
 class UsuarioCreateView(CreateView):
     model = Usuario
     template_name = "management/registrarUsuario.html"
     form_class = Form_RegistroUsuario
-    success_url = reverse_lazy('gestionUsuario')
+    success_url = reverse_lazy('reservacion:gestionUsuario')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Registro de Usuarios'
@@ -220,7 +286,14 @@ def eliminarPaquete(request, idPaquete):
     obj = Paquete.objects.get(idPaquete= idPaquete)
     obj.estadoPaquete = False
     obj.save()
-    return redirect('gestionPaquete')
+    return redirect(':reservacion:gestionPaquete')
+
+@login_required
+def eliminarDetallePaquete(request, idDetallePaquete):
+    obj = DetallePaquete.objects.get(idDetallePaquete= idDetallePaquete)
+    obj.estadoPaquete = False
+    obj.save()
+    return redirect('reservacion:gestionDetallePaquete')
 
 @login_required
 def upload_image_view(request):
@@ -255,36 +328,136 @@ class DetallePaqueteCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Registro de Tour del Paquete'
+        context['entity'] = 'Detalle Paquete'
         return context
     def get_success_url(self, **kwargs):         
         if  kwargs != None:
-            return reverse_lazy('modificarPaquete', kwargs = {'pk': self.request.user.paqueteID})
+            return reverse_lazy('reservacion:modificarPaquete', kwargs = {'pk': self.request.session['paqueteID']})
         else:
-            return reverse_lazy('modificarPaquete', args = (self.request.user.paqueteID))
-    # def post(self, request, *args, **kwargs):
-    #     if request.is_ajax():
-    #         form = self.form_class(request.POST)
-    #         if form.is_valid():
-    #             obj = DetallePaquete(
-    #                 nroDiaPaquete=form.cleaned_data.get('nroDiaPaquete'),
-    #                 paquete_detallePaquete=form.cleaned_data.get('paquete_detallePaquete'),
-    #                 descripcionDetallePaquete=form.cleaned_data.get('descripcionDetallePaquete'),
-    #                 imagenDetallePaquete=form.cleaned_data.get('imagenDetallePaquete')
-    #             )
-    #             obj.save()
-    #             mensaje = f'{self.model.__name__} registrado correctamente!'
-    #             error = 'No hay error!'
-    #             response = JsonResponse({'mensaje':mensaje,'error':error})
-    #             response.status_code = 201
-    #             return response
-    #         else:
-    #             mensaje = f'{self.model.__name__} no se ha podido registrar!'
-    #             error = form.errors
-    #             response = JsonResponse({'mensaje': mensaje, 'error': error})
-    #             response.status_code = 400
-    #             return response
+            return reverse_lazy('reservacion:modificarPaquete', args = (self.request.session['paqueteID']))
+    def get(self,request,*args,**kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        #contexto = super(DetallePaquete, self).get_context_data(**kwargs)
+        # form.fields['paquete_detallePaquete'].queryset= Paquete.objects.filter(idPaquete=self.request.session['paqueteID']) 
+        return self.render_to_response(
+            self.get_context_data(form=form))
+        # def form_valid(self, form):
+        #     form.instance.paquete_detallePaquete = Paquete.objects.get(idPaquete=self.request.session['paqueteID']) 
+        #     return super(DetallePaqueteCreateView, self).form_valid(form)
+        def get_success_url(self):
+            return reverse('reservacion:gestionLibro')
+
+class DetallePaqueteUpdateView(UpdateView):
+    model = DetallePaquete
+    form_class = DetallePaqueteForm
+    template_name = 'management/registrarDetallePaquete.html'
+    def get_success_url(self, **kwargs):
+        # obj = Paquete.objects.get(idPaquete = self.request.user.paqueteID)
+        # print('GET_SUCESSS_URL'+obj)
+        if  kwargs != None:
+            return reverse_lazy('reservacion:modificarPaquete', kwargs = {'pk': self.request.session['paqueteID']})
+        else:
+            return reverse_lazy('reservacion:modificarPaquete', args = (self.request.session['paqueteID']))
+    # def get(self,request,*args,**kwargs):
+    #     self.object = None
+    #     form_class = self.get_form_class()
+    #     form = self.get_form(form_class)
+
+    #     #contexto = super(DetallePaquete, self).get_context_data(**kwargs)
+    #     form.fields['paquete_detallePaquete'].initial = Paquete.objects.get(idPaquete=self.request.session['paqueteID']) 
+    #     return self.render_to_response(
+    #                 self.get_context_data(form=form,cantidad=cantidad))
+    #     def form_valid(self, form):
+    #         libro = form.save(commit=False)
+    #         libro.save()
+    #         return redirect('gestionLibro')
+    #     def get_success_url(self):
+    #         return reverse('gestionLibro')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Modificar el Tour del Paquete'
+        context['entity'] = 'Detalle Paquete'
+        return context
+    
+    def post(self, request, **kwargs):
+        request.POST = request.POST.copy()
+        print(request.POST)
+        
+        return super(DetallePaqueteUpdateView, self).post(request, **kwargs)
+    # def form_valid(self, form):
+    #     obj = form.save(commit=False)
+    #     obj.save()
+    #     return redirect('modificarPaquete')
+    
+    # def dispatch(self, request, *args, **kwargs):
+    #     self.obj = self.get_object()
+            # if obj.company.user != request.user:
+            #     raise PermissionDenied
+    # def get_object(self, queryset=None):
+    #     obj = getattr(self, 'object', None)
+    #     if obj is None:
+    #         obj = super().get_object(queryset)
+    #     return obj
+    
+    
+class CondicionCreateView(CreateView):
+    model = Condicion
+    form_class = CondicionForm
+    template_name = 'management/registrarCondicion.html'
+    # permission_required = ('usuario.view_usuario', 'usuario.add_usuario',
+    #                        'usuario.delete_usuario', 'usuario.change_usuario')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Condiciones'
+        context['entity'] = 'Condicion'
+        return context
+    # def get_success_url(self, **kwargs):         
+    #     if  kwargs != None:
+    #         if self.request.user.paqueteID:
+    #             return reverse_lazy('registrarPaquete')
+            
     #     else:
-    #         return redirect('gestionUsuario')
+    #         if self.request.user.paqueteID:
+    #             return reverse_lazy('registrarPaquete')
 
 
+class DetallePaqueteDeleteView(DeleteView):
+    model = DetallePaquete
+    template_name = 'management/eliminarDetallePaquete.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(DetallePaqueteDeleteView, self).get_context_data(**kwargs)
+        context['page_title'] = 'Eliminar el Detalle del Paquete'
+        context['entity'] = 'Detalle Paquete'
+        return context
+    
+    def get_success_url(self, **kwargs):
+        if  kwargs != None:
+            return reverse_lazy('reservacion:modificarPaquete', kwargs = {'pk': self.request.session['paqueteID']})
+        else:
+            return reverse_lazy('reservacion:modificarPaquete', args = (self.request.session['paqueteID']))
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.estadoDetallePaquete = True # Declare a boolean field is_deleted in your model. Default value is Flase.
+        return HttpResponseRedirect(self.get_success_url())
 
+
+class Recomendacion(TemplateView):
+    template_name = "management/recomendacion.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super(Recomendacion, self).get_context_data(**kwargs)
+        context['iterator'] = range(5)
+        print(context['iterator'])
+        context['page_title'] = "Recomendacion"
+        context['listaNuevos'] = Paquete.objects.filter(estadoPaquete = True).order_by('-idPaquete')[:3]
+        context['listaNuevos_c'] = Paquete.objects.filter(estadoPaquete = True).order_by('-idPaquete')
+        context['listaVisitados'] = Paquete.objects.filter(estadoPaquete = True).order_by('-visitasPaquete')[:3]
+        context['listaVisitados_c'] = Paquete.objects.filter(estadoPaquete = True).order_by('-visitasPaquete')
+        # context['listaReservados'] =Paquete.objects.all().values('').annotate(total=Count('actor')).order_by('total')
+        # context['listaReservados_c'] = Paquete.objects.filter(estadoPaquete = True).order_by('-visitasPaquete')
+        return context
+    
