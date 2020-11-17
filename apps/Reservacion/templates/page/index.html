@@ -18,7 +18,7 @@
             </ol>
             <div class="carousel-inner">
 
-                <div class="item active" style="background-image: url('https://www.perutogethertravel.com/wp-content/uploads/2018/12/machuu.jpg')">
+                <div class="item active" style="background-image: url('static/img/machupicchudesdecusco.jpg')">
                     <div class="container">
                         <div class="row">
                             <div class="col-md-7">
@@ -183,12 +183,18 @@
                                     <a href="{% url 'reservacion:detallePaquete' obj.pk %}" class="btn btn-primary">Ver Detalle</a>
                                     <a class="btn btn-primary" href="{% url 'reservacion:registrarReservacion' %}">Registrarte</a>
                                 </div>
+                                <form action="{% url 'reservacion:index' %}" method="GET">
+                                    {{form_rating.as_table}}
+                                    <input type="text" value="{{obj.idPaquete}}"  id="idPaquete" name="idPaquete" hidden >
+                                    <div class="card-footer">
+                                        <button name="btnCalificar" id="btnCalificar" type="submit" class="btn btn-primary">Calificar</button>
+                                    </div>
+                                </form>
                                 <h2>Calificación</h2>
-                                <span class="fa fa-star checked"></span>
-                                <span class="fa fa-star checked"></span>
-                                <span class="fa fa-star checked"></span>
-                                <span class="fa fa-star checked"></span>
-                                <span class="fa fa-star checked"></span> 
+
+                                {% for i in loop_times %}
+                                    <span class="fa fa-star checked"></span>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -232,11 +238,11 @@
                                     <a class="btn btn-primary" href="{% url 'reservacion:login' %}">Regístrate</a>
                                 </div>
                                 <h2>Calificación</h2>
-                                <span class="fa fa-star checked"></span>
-                                <span class="fa fa-star checked"></span>
-                                <span class="fa fa-star checked"></span>
-                                <span class="fa fa-star checked"></span>
-                                <span class="fa fa-star checked"></span> 
+
+                                {% for i in loop_times %}
+                                    <span class="fa fa-star checked"></span>
+                                {% endfor %}
+                                
                             </div>
                         </div>
                     </div>
@@ -248,6 +254,25 @@
         </div>
     </section>
     {% endif %}
+
+    
+    {% block scripts %}
+    <!-- <script src="{% static 'corlate/js/jquery.js' %}"></script>
+    <script>
+        $(document).ready( function () {
+            
+            $("#btnCalificar").submit(function (e) {
+                console.log('paso');
+                e.preventDefault();
+            })
+        })
+    </script> -->
+
+    {% endblock scripts %}
+        
+    
+        
+    
     <!--/#portfolio-item-->
 
 {% endblock content %}

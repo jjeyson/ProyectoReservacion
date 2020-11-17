@@ -6,6 +6,32 @@
 {% block title %}
     {{page_title}}
 {% endblock title %}
+
+
+{% block scripts %}
+    <script type="text/javascript">
+        function calcularPrecioInicial () {
+            var total = 0;
+            var personas = 0;
+            adultos = document.getElementById('adultosReservacion').value;
+            niños = document.getElementById('niñosReservacion').value;
+            precio = document.getElementById('precioPaquete').value;
+            console.log(adultos)
+            console.log(niños)
+            console.log(precio)
+            // Aquí valido si hay un valor previo, si no hay datos, le pongo un cero "0".
+            niños = (niños == null || niños == undefined || niños == "") ? 0 : niños;
+            adultos = (adultos == null || adultos == undefined || adultos == "") ? 0 : adultos;
+            /* Esta es la suma. */
+            personas = (parseInt(adultos) + parseInt(niños));
+            total = (parseInt(precio) * parseInt(personas));
+            // Colocar el resultado de la suma en el control "span".
+            document.getElementById('cuposReservacion').value = personas;
+            document.getElementById('precioReservacion').value = total;
+        }
+        window.onload = calcularPrecioInicial;
+    </script>
+{% endblock scripts %}
     
 
 {% block content %}
@@ -16,92 +42,108 @@
     <section id="contact-page">
         <div class="container">
             <div class="large-title text-center">        
-                <h2>La agencia Turismo Andre S.A.C. está lista para ayudarte</h2>
+                <h2>La agencia PERÚ TOGETHER TRAVEL está lista para ayudarte</h2>
                 <p>No aceptamos devoluciones <br> Pero siempre estaremos alli para contactarnos por <a href="{% url 'reservacion:contactanos' %} "> <strong>aquí</strong></a> </p>
             </div> 
             <div class="row contact-wrap"> 
                 <div class="status alert alert-success" style="display: none"></div>
-                <form id="main-contact-form" class="contact-form" name="contact-form" method="post" action="sendemail.php">
-                    <div class="col-sm-5 col-sm-offset-1">
-                        <div class="form-group">
-                            <label>Destino *</label>
-                            <input type="text" name="destino" class="form-control" required="required">
-                        </div>
-                        <div class="form-group">
-                            <label>Fecha de Entrada *</label>
-                            <input type="date" name="fechaEntrada" class="form-control" required="required">
-                        </div>
-                        <div class="form-group">
-                            <label>Fecha de Salida</label>
-                            <input type="date" name="fechaSalida" class="form-control" required="required">
-                        </div>
-                        <div class="form-group">
-                            <label>Cantidad de adultos *</label>
-                            <select name="tipoMensaje" id="tipoMensaje">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="1">4</option>
-                                <option value="2">5</option>
-                                <option value="3">6</option>
-                                <option value="1">7</option>
-                                <option value="2">8</option>
-                                <option value="3">9</option>
-                                <option value="3">10</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Cantidad de niños *</label>
-                            <select name="tipoMensaje" id="tipoMensaje">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="1">4</option>
-                                <option value="2">5</option>
-                                <option value="3">6</option>
-                                <option value="1">7</option>
-                                <option value="2">8</option>
-                                <option value="3">9</option>
-                                <option value="3">10</option>
-                            </select>
-                        </div>                         
-                    </div>
-                    <div class="col-sm-5">
-                        <div class="form-group">
-                            <label>Cantidad de habitaciones *</label>
-                            <select name="tipoMensaje" id="tipoMensaje">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="1">4</option>
-                                <option value="2">5</option>
-                                <option value="3">6</option>
-                                <option value="1">7</option>
-                                <option value="2">8</option>
-                                <option value="3">9</option>
-                                <option value="3">10</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Cantidad de Días *</label>
-                            <textarea name="message" id="message" required="required" class="form-control" rows="8"></textarea>
-                        </div>
-                        
-                        {% if user.is_authenticated %}
-                            <div class="form-group">
-                                <p>Señor {{user.first_name}} {{user.last_name}} estamos para atenderlo</p>
+                    <form method="post" action="">{% csrf_token %}
+                        {% if paquete.disponibilidadPaquete > 1 %}
+                            <div class="col-sm-5 col-sm-offset-1">
+                                {{form.paquete_reservacion.label_tag}}
+                                    <input type="text" name="destino" class="form-control" required="required" value="{{paquete.tituloPaquete}}">
+                                {{form.as_table}}
+                                <!-- {{ form.non_field_errors }}
+
+                                {{ form.source.errors }}
+                                {{ form.source }}
+                                <div class="form-group">
+                                    {{form.paquete_reservacion.label_tag}}
+                                    <input type="text" name="destino" class="form-control" required="required" value="{{paquete.tituloPaquete}}">
+                                    {{form.paquete_reservacion}}
+                                    {{form.paquete_reservacion.errors}}
+                                    {{form.paquete_reservacion.help_text }}
+                                </div>
+                                <div class="form-group">
+                                    {{form.fechaViajeReservacion.label_tag}}
+                                    {{form.fechaEntradaReservacion}}
+                                    {{form.fechaEntradaReservacion.errors}}
+                                </div>
+                                <div class="form-group">
+                                    {{form.adultosReservacion.label_tag}}
+                                    {{form.adultosReservacion}}
+                                    {{form.adultosReservacion.errors}}
+                                    
+                                </div>
+                                <div class="form-group">
+                                    
+                                    {{form.niñosReservacion.label_tag}}
+                                    {{form.niñosReservacion}}
+                                    {{form.niñosReservacion.errors}}
+                                </div>                         
                             </div>
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    {{form.cuposReservacion.label_tag}}
+                                    {{form.cuposReservacion}}
+                                    {{form.cuposReservacion.errors}}
+                                    
+                                </div>
+                                <div class="form-group">
+                                    {{form.precioPaquete.label_tag}}
+                                    {{form.precioPaquete}}
+                                    {{form.precioPaquete.errors}}
+                                </div>
+                                <div class="single-pricing featured">
+                                    <span>Standard</span>
+                                    <h1>
+                                        <span>$</span>
+                                        49
+                                        <span>/mo</span>
+                                    </h1>
+                                    <div class="clearfix">
+                                        <ul>
+                                            <li><i class="fa fa-pie-chart"></i> 5 Gb Disk Space</li>
+                                            <li><i class="fa fa-paper-plane"></i> 1GB Dadicated Ram</li>
+                                            <li><i class="fa fa-cloud"></i> 1GB Dadicated Ram</li>
+                                        </ul>
+                                    </div>
+                                    <a href="#">BUY</a>
+                                </div> 
+                                <div class="form-group">
+                                    {{form.precioReservacion.label_tag}}
+                                    {{form.precioReservacion}}
+                                    {{form.precioReservacion.errors}}
+                                </div>
+                                -->
+                                {% if user.is_authenticated %}
+                                    <div class="about-content">
+                                        <h2>Estimado(a): {{user.first_name}}</h2>
+                                        <p>Estamos para atender cualquier duda</p>
+                                    </div>
+                                {% else %}
+                                    <div class="about-content">
+                                        <h2>Regístrate gratis <a href="">Aqui</a></h2>
+                                    </div>
+                                {% endif %}
+                                <div class="form-group">
+                                    <button type="submit"class="btn btn-primary btn-lg">Reservar</button>
+                                </div>
+                            </div>
+                        {% else %}
+                            <p>El Paquete no cuenta con cupos Disponibles</p>
                         {% endif %}
-                        <div class="form-group">
-                            <button type="submit" name="submit" class="btn btn-primary btn-lg" required="required">Registrar</button>
-                        </div>                        
-                        
-                    </div>
-                </form> 
+                    </form> 
+                
             </div><!--/.row-->
+            <div id="exito" style="display:none">
+                Sus datos han sido recibidos con éxito.
+            </div>
+            <div id="fracaso" style="display:none">
+                Se ha producido un error durante el envío de datos.
+            </div>
         </div><!--/.container-->
     </section><!--/#contact-page-->
 </section>
-    
 {% endblock content %}
     

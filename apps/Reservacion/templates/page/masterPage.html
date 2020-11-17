@@ -24,8 +24,14 @@
     <link href="{% static 'corlate/css/icomoon.css' %} " rel="stylesheet">
     <link href="{% static 'corlate/css/main.css' %} " rel="stylesheet">
     <link href="{% static 'corlate/css/responsive.css' %} " rel="stylesheet">
-    <link href="{% static 'corlate/css/mycss.css' %} " rel="stylesheet"> 
-
+    <link href="{% static 'corlate/css/mycss.css' %} " rel="stylesheet">
+    <!-- StarRating -->
+    
+    
+        
+    
+    <!-- <link rel="stylesheet" href="{% static 'StarRating/css/bootstrap.min.css' %} "> -->
+        
     <!-- <link href="{% static 'corlate/css1/bootstrap.min.css' %} " rel="stylesheet"> -->
     <!-- <link href="{% static 'corlate/css1/font-awesome.min.css' %} " rel="stylesheet"> -->
     <link href="{% static 'corlate/css1/style.css' %} " rel="stylesheet">
@@ -42,6 +48,10 @@
     <link rel="apple-touch-icon-precomposed" href="{% static 'corlate/images/ico/apple-touch-icon-57-precomposed.png' %} ">
     <!-- Font Awesome Icon Library -ESTRELLAS DE RATING -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
+    
+
 </head>
 <!--/head-->
 
@@ -70,7 +80,7 @@
                         {% if user.is_authenticated %}
                             <li class="{% if request.path == '/misPaquetes' %}active {% endif %}"><a href="{% url 'reservacion:misPaquetes' %}">Mis Paquetes</a></li>  
                         {% else %}
-                            <li class="{% if request.path == '/login' %}active {% endif %}"><a href="{% url 'reservacion:login' %}">Inicio de Sesion</a></li>
+                            <li class="{% if request.path == '/login' %}active {% endif %}"><a href="{% url 'reservacion:login3' %}">Inicio de Sesion</a></li>
                         {% endif %}
                         
                         {% if user.is_authenticated and  user.is_staff == True %}
@@ -196,15 +206,22 @@
             </div>
         </div>
     </footer>
+    
+        
     <!--/#footer-->
-
     <script src="{% static 'corlate/js/jquery.js' %}"></script>
     <script src="{% static 'corlate/js/bootstrap.min.js' %} "></script>
     <script src="{% static 'corlate/js/jquery.prettyPhoto.js' %} "></script>
     <script src="{% static 'corlate/js/owl.carousel.min.js' %} "></script>
     <script src="{% static 'corlate/js/jquery.isotope.min.js' %} "></script>
     <script src="{% static 'corlate/js/main.js' %} "></script>
-
+    <script src="{% static 'corlate/js/myscript.js' %} "></script>
+    <!-- starr -->
+    
+    {% block scripts %}
+        
+    {% endblock scripts %}
+    
 </body>
 
 </html>

@@ -17,29 +17,16 @@
     <div class="blog container">
         <div class="row">
             <div class="col-md-8">
-                <div class="blog-item">
-                    <a href="#"><img class="img-responsive img-blog" src="{% static 'corlate/images/Turismo/VisitasHistorica.jpg' %}" width="100%" alt="" /></a>
-                    <div class="blog-content">
-                        <h2><a href="blog-item.html">Visitas Historicas</a></h2>
-                        </div>
-                </div>
-                <!--/.blog-item-->
-
-                <div class="blog-item">
-                    <a href="#"><img class="img-responsive img-blog" src="{% static 'corlate/images/Turismo/PlazaDeArmas.jpg' %}" width="100%" alt="" /></a>
-                    <div class="blog-content">
-                        <h2><a href="blog-item.html">Plaza de Armas</a></h2>
-                    </div>
-                </div>
-                <!--/.blog-item-->
-
-                <div class="blog-item">
-                    <a href="#"><img class="img-responsive img-blog" src="{% static 'corlate/images/Turismo/ChanChan.jpg' %}" width="100%" alt="" /></a>
-                    <div class="blog-content">
-                        <h2><a href="blog-item.html">Complejo de Chan Chan</a></h2></div>
-                </div>
-                <!--/.blog-item-->
                 
+                {% for obj in misPaquetes %}
+                    <div class="blog-item">
+                        <a href="{% url 'reservacion:detallePaquete' obj.idPaquete %}"><img class="img-responsive img-blog" src="{{obj.get_imageAvatar}}" width="100%" alt="" /></a>
+                        <div class="blog-content">
+                            <h2><a href="{% static 'reservacion:detallePaquete' %}">{{obj.tituloPaquete}}</a></h2>
+                            </div>
+                    </div>
+                    
+                {% endfor %}
             </div>
             <!--/.col-md-8-->
                 
@@ -48,15 +35,23 @@
         <!--/.row-->
         <div class="row">
             <div class="col-md-12 text-center">
-                <ul class="pagination pagination-lg">
-                    <li><a href="#"><i class="fa fa-long-arrow-left"></i></a></li>
-                    <li class="active"><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#"><i class="fa fa-long-arrow-right"></i></a></li>
-                </ul>
+                    {% if is_paginated %}
+                    <ul class="pagination pagination-lg">
+                        {% if page_obj.has_previous %}
+                            <li><a href="?page={{ page_obj.previous_page_number }}"><i class="fa fa-long-arrow-left"></i></a></li>
+                        {% endif %}
+          
+                        {% for i in paginator.page_range %}
+                            <li {% if page_obj.number == i %} class="active" {% endif %}>
+                                <a href="?page={{i}}">{{ i }}</a>
+                            </li>
+                        {% endfor %}
+          
+                        {% if page_obj.has_next %}
+                            <li><a href="?page={{ page_obj.next_page_number }}"><i class="fa fa-long-arrow-right"></i></a></li>
+                        {% endif %}
+                    </ul>
+                    {% endif %}
                 <!--/.pagination-->
             </div>
         </div>

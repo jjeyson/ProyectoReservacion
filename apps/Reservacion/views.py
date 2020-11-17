@@ -5,15 +5,16 @@ from django.views.generic import TemplateView, CreateView, ListView, DeleteView,
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Count
 from .forms import *
 from .models import *
 from .tuplas import *
+
 
 # Create your views here.
 
@@ -26,15 +27,63 @@ class IndexListView(ListView):
     model : Paquete
     template_name = "page/index.html"
     #context_object_name = 'object_list'
-    queryset = Paquete.objects.filter(estadoPaquete = True)
+    #queryset = Paquete.objects.filter(estadoPaquete = True)
     def get_queryset(self):
-        queryset = super(IndexListView, self).get_queryset()
-        return queryset.filter(estadoPaquete=True)
+        #queryset = super().get_queryset()
+        ratings = Rating.objects.filter(estadoRating = True)
+        paquetes = Paquete.objects.filter(estadoPaquete = True)
+        # for obj in ratings:
+        #     for paq in paquetes:
+        #         if obj.scoreRating == paq.idPaquete:
+        #             pass
+        # visitados = Paquete.objects.filter(estadoPaquete = True).order_by('-visitasPaquete')[:3]
+        # lista = []
+        # calificados = Rating.objects.all().values('paquete_Rating').annotate(total=Count('paquete_Rating')).order_by('-total')[:3]
+        # for c in calificados:
+        #     lista.append(v)
+        # for v in visitados:
+        #     lista.append(v)
+        # reservados = Reservacion.objects.all().values('paquete_reservacion').annotate(total=Count('usuario_Reservacion')).order_by('-total')[:3]
+        # for r in reservados:
+        #     lista.append(v)
+        # nuevos = Paquete.objects.filter(estadoPaquete = True).order_by('-idPaquete')[:3]
+        # for v in nuevos:
+        #     lista.append(v)
+        return Paquete.objects.filter(estadoPaquete = True).order_by('-visitasPaquete')[:6]
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['form_rating'] = Form_RegistroRating()
         context['page_title'] = 'Inicio'
+        context['loop_times'] = range(1, 6)
         return context
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        allow_empty = self.get_allow_empty()
+        if not allow_empty:
+            # When pagination is enabled and object_list is a queryset,
+            # it's better to do a cheap query than to load the unpaginated
+            # queryset in memory.
+            if self.get_paginate_by(self.object_list) is not None and hasattr(self.object_list, 'exists'):
+                is_empty = not self.object_list.exists()
+            else:
+                is_empty = not self.object_list
+            if is_empty:
+                raise Http404(_('Empty list and “%(class_name)s.allow_empty” is False.') % {
+                    'class_name': self.__class__.__name__,
+                })
+        scoreRating = request.GET.get('scoreRating')
+        idPaquete= request.GET.get('idPaquete')
+        if scoreRating and idPaquete:
+            obj = Paquete.objects.get(idPaquete = idPaquete)
+            obj = Rating.objects.create(scoreRating=scoreRating, paquete_Rating=obj)
+            obj.save()
+        
+        context = self.get_context_data()
+        return self.render_to_response(context)
 
+# class RatingCreateView(JSONFormMixin, CreateView):
+#     model = Rating
+#     form_class = Form_RegistroRating
 
 
 class DetallePaqueteDetailView(DetailView):
@@ -44,13 +93,12 @@ class DetallePaqueteDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if "paqueteID" in self.request.session:
-            del self.request.session['num_visits']
-            obj = Paquete.objects.get(idPaquete=self.object.pk)
-            num_visits =  obj.visitasPaquete #self.request.session.get('num_visits', 0)
-            self.request.session['num_visits'] = num_visits + 1
-            Paquete.objects.filter(idPaquete=self.object.pk).update(visitasPaquete=self.request.session['num_visits'])
-        #self.request.session['paqueteID'] = self.object.pk
+        self.request.session['paqueteID'] = self.object.pk
+        print(str(self.request.session.get('paqueteID')) +'IDPAQUETE')
+        obj = Paquete.objects.get(idPaquete=self.object.pk)
+        num_visits =  obj.visitasPaquete #self.request.session.get('num_visits', 0)
+        self.request.session['num_visits'] = num_visits + 1
+        Paquete.objects.filter(idPaquete=self.object.pk).update(visitasPaquete=self.request.session['num_visits'])
         context['listaDetalles'] = DetallePaquete.objects.filter(paquete_detallePaquete = self.object.pk)
         context['page_title'] = 'Detalle del Paquete'
         return context
@@ -85,11 +133,69 @@ class ReservacionCreateView(CreateView):
     model = Reservacion
     template_name = "page/reservarPaquete.html"
     form_class = ReservacionForm
+    sucess_url = reverse_lazy('reservacion:index')
     def get_context_data(self, **kwargs):
-        context = super(ReservacionCreateView,self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["page_title"] = 'Registra tu '+Reservacion._meta.verbose_name.title()
-        context["entity"] = Reservacion._meta.verbose_name.title() 
+        context["entity"] = Reservacion._meta.verbose_name.title()
+        context["habitaciones"] = HABITACIONES
+        context["adultos"] = ADULTOS
+        context["niños"] = NIÑOS
+        print(str(self.request.session.get('paqueteID')) +' IDPAQUETE')
+        context["paquete"] = Paquete.objects.get(idPaquete= self.request.session.get('paqueteID'))
+        # form_class = self.get_form_class()
+        # form = self.get_form(form_class)
+        # print(form)
+        # for field in form:
+        #     print(field.label_tag)
         return context
+    def get(self,request,*args,**kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        #contexto = super(Libro, self).get_context_data(**kwargs)
+        obj = Paquete.objects.get(idPaquete = request.session['paqueteID'])
+        user = Usuario.objects.get(id = request.user.id)
+        form.fields['paquete_reservacion'].initial = obj
+        form.fields['precioPaquete'].initial = obj.precioPaquete
+        form.fields['usuario_Reservacion'].initial = user
+        print(request.user.id)
+        return self.render_to_response(
+                    self.get_context_data(form=form))
+    def post(self, request, *args, **kwargs):
+           self.object = None
+           form_class = self.get_form_class()
+           form = self.get_form(form_class)
+           if (form.is_valid()):
+               return self.form_valid(form)
+           else:
+               return self.form_invalid(form)
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+           return self.render_to_response(
+               self.get_context_data(form=form))
+    def get_success_url(self):
+        return reverse('reservacion:index')#, kwargs={'lawyer_slug': self.object.lawyer_slug}
+    # def get_initial(self):
+    #        recipe = get_object_or_404(Recipe, slug=self.kwargs.get('slug'))
+    #        return {
+    #            'recipe':recipe,
+    #        }
+    # def post(self, request, *args, **kwargs):
+    #     self.object = None
+    #     #request.POST = request.POST.copy()
+    #     form = PersonaForm(request.POST)
+    #     destino = request.POST['destino']
+    #     fechaEntrada = request.POST['fechaEntrada']
+    #     cantidadAdultos = request.POST['cantidadAdultos']
+    #     cantidadNiños = request.POST['cantidadNiños']
+    #     cantidadHabitaciones = request.POST['cantidadNiños']
+    #     return super().post(request, *args, **kwargs)
+    
     
 
 
@@ -108,8 +214,45 @@ class SignUpView(CreateView):
         login(self.request, usuario)
         return redirect('/')
 
-class MisPaquetes(TemplateView):
+@login_required
+def misPaquetes_serializer(self):
+    lista = []
+    reservaciones = Reservacion.objects.filter(usuario_Reservacion=self.request.user).distinct()
+    paquetes = Paquete.objects.all()
+    for obj in reservaciones:
+        for paq in paquetes:
+            if obj.paquete_reservacion.idPaquete == paq.idPaquete:
+                lista.append(paq)
+    misPaquetes = list(dict.fromkeys(lista))
+    
+    return misPaquetes
+
+
+class MisPaquetesListView(ListView, LoginRequiredMixin):
+    model = Paquete
     template_name = "page/misPaquetes.html"
+    paginate_by = 10
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lista = []
+        reservaciones = Reservacion.objects.filter(usuario_Reservacion=self.request.user).distinct()
+        paquetes = Paquete.objects.all()
+        for obj in reservaciones:
+            for paq in paquetes:
+                if obj.paquete_reservacion.idPaquete == paq.idPaquete:
+                    lista.append(paq)
+        misPaquetes = list(dict.fromkeys(lista))
+        context["misPaquetes"] = misPaquetes
+
+        # diccionario = dict(enumerate(set(paquetesUsuario)))
+        # print(paquetesUsuario)
+        # print(json.dumps(diccionario))
+        
+        #self.request.session['misPaquetes'] = json.dumps(diccionario)
+        return context
+    
+    
+
 
 
 class PanelControl(TemplateView):
@@ -211,8 +354,8 @@ class PaqueteUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         #paqueteID = self.request.session.get('paqueteID', 0)
-        if "paqueteID" in self.request.session:
-            self.request.session['paqueteID'] = self.object.pk
+        # if "paqueteID" in self.request.session:
+        self.request.session['paqueteID'] = self.object.pk
         context['page_title'] = 'Modificar Paquete'
         context['entity'] = 'Paquete'
         context['listaDetalles'] = DetallePaquete.objects.filter(estadoDetallePaquete=True, paquete_detallePaquete=self.request.session['paqueteID'])
@@ -445,19 +588,26 @@ class DetallePaqueteDeleteView(DeleteView):
         return HttpResponseRedirect(self.get_success_url())
 
 
+
 class Recomendacion(TemplateView):
     template_name = "management/recomendacion.html"
     
     def get_context_data(self, **kwargs):
         context = super(Recomendacion, self).get_context_data(**kwargs)
         context['iterator'] = range(5)
-        print(context['iterator'])
+        # print(context['iterator'])
+        context['paquetes'] = Paquete.objects.all()
         context['page_title'] = "Recomendacion"
         context['listaNuevos'] = Paquete.objects.filter(estadoPaquete = True).order_by('-idPaquete')[:3]
         context['listaNuevos_c'] = Paquete.objects.filter(estadoPaquete = True).order_by('-idPaquete')
         context['listaVisitados'] = Paquete.objects.filter(estadoPaquete = True).order_by('-visitasPaquete')[:3]
         context['listaVisitados_c'] = Paquete.objects.filter(estadoPaquete = True).order_by('-visitasPaquete')
-        # context['listaReservados'] =Paquete.objects.all().values('').annotate(total=Count('actor')).order_by('total')
+        #context['listaReservados'] =Reservacion.objects.all().values('usuario_reservacion').annotate(total=Count('usuario_reservacion')).order_by('total')
+        context['listaReservados'] = Reservacion.objects.all().values('paquete_reservacion').annotate(total=Count('usuario_Reservacion')).order_by('-total')[:3]
+        context['listaCalificados'] = Rating.objects.all().values('paquete_Rating').annotate(total=Count('paquete_Rating')).order_by('-total')[:3]
+        print(context['listaCalificados'])
+        recomendados = []
+
         # context['listaReservados_c'] = Paquete.objects.filter(estadoPaquete = True).order_by('-visitasPaquete')
         return context
     

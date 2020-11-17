@@ -53,24 +53,6 @@ class Hotel(models.Model):
     def __str__(self):
         return self.idHotel
 
-class Reservacion(models.Model):
-    idReservacion = models.AutoField(primary_key=True, help_text="ID único para esta Reservacion")
-    fechaRegistroReservacion = models.DateTimeField(verbose_name='Fecha de Registro', auto_now_add=True, blank=True)
-    fechaEntradaReservacion = models.DateTimeField(verbose_name='Fecha de Entrada ', auto_now_add=True, blank=True)
-    fechaSalidaReservacion = models.DateTimeField(verbose_name='Fecha de Salida', auto_now_add=True, blank=True)
-    precioReservacion = models.IntegerField(verbose_name='Pension', help_text="Cantidad de Dinero en Soles" )
-    #hotel_reservacion = models.ForeignKey(Hotel,on_delete=models.SET_NULL, null=True)
-    estadoReservacion = models.BooleanField(verbose_name='Activo', default=True)
-    class Meta: 
-        """Meta definition for Paquete."""
-
-        verbose_name = 'Reservacion'
-        verbose_name_plural = 'Reservaciones'
-    # class Meta:
-    #     ordering = ["idReservacion"]
-
-    def __str__(self):
-        return self.idReservacion
 
 class Vuelo(models.Model):
     idVuelo = models.AutoField(primary_key=True, help_text="ID único para Vuelo")
@@ -97,18 +79,18 @@ class VueloTurista(models.Model):
     def __str__(self):
         return self.idVueloTurista
 
-class ViajeContratado(models.Model):
-    idViajeContratado = models.AutoField(primary_key=True, help_text="ID único para Viaje contratado")
-    reservacion_viajeContratado = models.ForeignKey(Reservacion, on_delete=models.SET_NULL, null=True)
-    usuario_viajeContratado = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True)
-    vueloTurista_vueloContratado = models.ForeignKey(VueloTurista, on_delete=models.SET_NULL, null= True)
-    estadoViajeContratado = models.BooleanField(verbose_name='Activo', default=True)
+# class ViajeContratado(models.Model):
+#     idViajeContratado = models.AutoField(primary_key=True, help_text="ID único para Viaje contratado")
+#     reservacion_viajeContratado = models.ForeignKey(Reservacion, on_delete=models.SET_NULL, null=True)
+#     usuario_viajeContratado = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True)
+#     vueloTurista_vueloContratado = models.ForeignKey(VueloTurista, on_delete=models.SET_NULL, null= True)
+#     estadoViajeContratado = models.BooleanField(verbose_name='Activo', default=True)
 
-    class Meta:
-        ordering = ["idViajeContratado"]
+#     class Meta:
+#         ordering = ["idViajeContratado"]
 
-    def __str__(self):
-        return self.reservacion_viajeContratado
+#     def __str__(self):
+#         return self.reservacion_viajeContratado
 
 class Condicion(models.Model):
     """Model definition for CondicionPaquete."""
@@ -141,11 +123,10 @@ class Paquete(models.Model):
     edadMinimaPaquete = models.PositiveIntegerField(default=5, validators=[MinValueValidator(1), MaxValueValidator(18)], blank=True, null=True,help_text='')
     visitasPaquete = models.IntegerField(verbose_name='Visitas',help_text='', blank=True, null=True, default=0)
     mesPaquete = models.CharField(verbose_name='Mes de Disponiblidad', max_length=15, choices=MESES, null=True,blank=True, default='Todos los meses', help_text='')
-    disponibilidadPaquete = models.PositiveSmallIntegerField(verbose_name='Numero de Cupos', null=True,blank=True, help_text='', default=150, validators=[MinValueValidator(1), MaxValueValidator(100)])
+    disponibilidadPaquete = models.PositiveSmallIntegerField(verbose_name='Numero de Cupos', null=True,blank=True, help_text='', default=150, validators=[MinValueValidator(0), MaxValueValidator(150)])
     imagenPrincipal = models.ImageField(verbose_name='Imagen de Fondo', upload_to='img/paquetes/', blank=True, null=True)
     imagenAvatar = models.ImageField(verbose_name='Imagen Pequeña', upload_to='img/paquetes/', blank=True, null=True)
     condicion_paquete = models.ManyToManyField(Condicion, verbose_name="Condiciones", help_text="", null=True, blank=True)
-    reservacion_paquete = models.ManyToManyField(Reservacion, verbose_name="Reservacion", help_text="", null=True, blank=True)
     estadoPaquete = models.BooleanField(verbose_name='Activo', default=True, null=True, blank=True)
     class Meta: 
         """Meta definition for Paquete."""
@@ -191,7 +172,41 @@ class DetallePaquete(models.Model):
         return str(self.nroDetalleDiaPaquete)
 
 
+class Reservacion(models.Model):
+    idReservacion = models.AutoField(primary_key=True, help_text="ID único para esta Reservacion")
+    fechaViajeReservacion = models.DateTimeField(verbose_name='Fecha de Registro', auto_now_add=True , blank=True, null=True)
+    #fechaEntradaReservacion = models.DateTimeField(verbose_name='Fecha de Entrada ', auto_now_add=True, blank=True)
+    #fechaSalidaReservacion = models.DateTimeField(verbose_name='Fecha de Salida', auto_now_add=True, blank=True)
+    adultosReservacion = models.CharField(verbose_name='Cantidad de adultos', max_length=2, choices=ADULTOS, blank=True, default='0', help_text='')
+    niñosReservacion = models.CharField(verbose_name='Cantidad de niños', max_length=2, choices=NIÑOS, blank=True, default='0', help_text='')
+    cuposReservacion = models.PositiveSmallIntegerField(verbose_name='Cupos (Personas)', null=True,blank=True, help_text='', default=1, validators=[MinValueValidator(1), MaxValueValidator(50)])
+    paquete_reservacion = models.ForeignKey(Paquete,on_delete=models.SET_NULL , null=True, blank=True, verbose_name='Destino')
+    usuario_Reservacion = models.ForeignKey(Usuario, verbose_name='Usuario', on_delete=models.SET_NULL, blank=True, null=True)
+    precioReservacion = models.IntegerField(verbose_name='Pension', help_text="Cantidad de Dinero en Soles" )
+    #hotel_reservacion = models.ForeignKey(Hotel,on_delete=models.SET_NULL, null=True)
 
+    estadoReservacion = models.BooleanField(verbose_name='Activo', default=True)
+    class Meta: 
+        """Meta definition for Paquete."""
+
+        verbose_name = 'Reservacion'
+        verbose_name_plural = 'Reservaciones'
+    # class Meta:
+    #     ordering = ["idReservacion"]
+
+    def __str__(self):
+        return self.idReservacion
+
+class Rating(models.Model):
+    # idRating = models.Autofield(primary_key=True, help_text="ID único para este rating")
+    # usuario_Rating = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True)
+    paquete_Rating = models.ForeignKey(Paquete, on_delete=models.SET_NULL, null=True, blank=True)
+    scoreRating = models.PositiveSmallIntegerField(verbose_name='Valoracion', null=True,blank=True, help_text='', default=1, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    # fechaCreacionRating = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación')
+    estadoRating = models.BooleanField(verbose_name='Activo', default=True)
+
+    def __str__(self):
+        return str(self.pk)
 
 
 class Album(models.Model):

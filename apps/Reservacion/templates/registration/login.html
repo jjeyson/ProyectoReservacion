@@ -24,7 +24,8 @@
     <div class="card-body login-card-body">
       <p class="login-box-msg">Ingrese para poder empezar su sesion</p>
 
-      <form action="{% url 'login3' %}" method="post">
+      <form action="{% url 'reservacion:login3' %}" method="post">
+        {% csrf_token %}
         <div class="input-group mb-3">
           {{ form.username}}
           <div class="input-group-append">

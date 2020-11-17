@@ -6,23 +6,51 @@ from django.contrib.sessions.models import Session
 from .models import *
 from apps.Reservacion.tuplas import *
 
+class Form_RegistroRating(forms.ModelForm):
+    estadoRating = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
+    scoreRating = forms.IntegerField(label='Calificacion', max_value=5, min_value=0, initial=0, widget=forms.NumberInput(attrs= {'class':'form-control','id':'scoreRating', 'name':'scoreRating'}),)
+    class Meta:
+        model = Rating
+        fields = (
+            'scoreRating',
+        )
+        exclude = ('paquete_Rating','estadoRating')
 
 class ReservacionForm(forms.ModelForm):
     """Form definition for Reservacion."""
-
+    #paquete_reservacion = forms.forms.CharField(, max_length=, required=False)
+    # content = forms.CharField(
+    #     label="Your Message", required=True,
+    #     widget=forms.Textarea(attrs={'class': 'form-control'}))
+    precioPaquete = forms.IntegerField(label='Precio del Paquete',max_value=99999,min_value=0,required=False, 
+        widget=forms.NumberInput(attrs={'class': 'form-control','id': 'precioPaquete','name': 'precioPaquete'}))
+    paquete_reservacion = forms.ModelChoiceField(label='PAQUETE', widget=forms.HiddenInput(), queryset=Paquete.objects.all())
+    usuario_Reservacion = forms.ModelChoiceField(label='USUARIO', widget=forms.HiddenInput(), queryset=Usuario.objects.all())
+    estadoReservacion = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
     class Meta:
         """Meta definition for Reservacionform."""
 
         model = Reservacion
-        fields = ('estadoReservacion','precioReservacion')
-        #readonly_fields = ['fechaRegistroReservacion','fechaEntradaReservacion','fechaSalidaReservacion']
+        fields = ('__all__')
+        labels ={
+            'idReservacion':'Identificador de Reservacion',
+            'precioReservacion':'Precio Total',
+            'paquete_reservacion':'PAQUETE',
+            'usuario_Reservacion':'Usuario',
+        }
+        #readonly_fields = ['fechaViajeReservacion']
+        widgets = {
+                'fechaViajeReservacion': forms.DateTimeInput(attrs = {'class':'form-control','id':'fechaViajeReservacion',  'name':'fechaViajeReservacion'}),
+                'adultosReservacion': forms.Select(choices=ADULTOS, attrs = {'class':'form-control', 'id':'adultosReservacion', 'name':'adultosReservacion','onchange' : "personasAdultos(this.value);"}),
+                'niñosReservacion': forms.Select(choices=NIÑOS, attrs = {'class':'form-control', 'id':'niñosReservacion', 'name':'niñosReservacion','onchange' : "personasNiños(this.value);"}),
+                'cuposReservacion': forms.NumberInput(attrs= {'class':'form-control','id':'cuposReservacion', 'name':'cuposReservacion'}),
+                'precioReservacion': forms.NumberInput(attrs= {'class':'form-control','id':'precioReservacion', 'name':'precioReservacion'}),
+                #'estadoReservacion': forms.CheckboxInput(attrs={'class':'form-control','id': 'estadoReservacion'})
 
+        }
 
 class RegistrarPaqueteForm(forms.ModelForm):
-    condicion_paquete = forms.ModelMultipleChoiceField(
-        queryset=Condicion.objects.filter(estadoCondicion= True),
-        
-       )
+    condicion_paquete = forms.ModelMultipleChoiceField(queryset=Condicion.objects.filter(estadoCondicion= True),)
     estadoPaquete = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
     class Meta:
         model = Paquete
@@ -55,7 +83,7 @@ class RegistrarPaqueteForm(forms.ModelForm):
             'mesPaquete': forms.Select(attrs={'class': 'form-control','id':'mesPaquete'}),
             'disponibilidadPaquete': forms.NumberInput(attrs={'class': 'form-control','id':'disponibilidadPaquete'}),
             'precioPaquete': forms.NumberInput(attrs={'class': 'form-control','id':'precioPaquete', 'default':1000}),
-            'estadoPaquete': forms.RadioSelect(attrs={'class': 'form-control','id':'estadoPaquete'}),
+            #'estadoPaquete': forms.RadioSelect(attrs={'class': 'form-control','id':'estadoPaquete'}),
             'visitasPaquete': forms.NumberInput(attrs={'class': 'form-control','id':'visitasPaquete','disabled': True, 'default':0}),
             'nHorasPaquete': forms.NumberInput(attrs={'class': 'form-control','id':'nHorasPaquete'}),
         }
