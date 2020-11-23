@@ -16,7 +16,7 @@ class Usuario(AbstractUser):
     imagenUsuario = models.ImageField(verbose_name='Imagen de Perfil', upload_to='img/users/', blank=True, null=True)
     DNIUsuario = models.CharField(max_length=20,verbose_name='Doc. Identidad', help_text='')
     telefonoUsuario = models.CharField(max_length=20, verbose_name='Telefono', help_text='No incluya Parentesis, ni guiones ni espacios')
-    paqueteID = models.PositiveIntegerField(verbose_name='Imagen de Perfil', default=1 , blank=True, null=True)
+    
     class Meta: 
         """Meta definition for Paquete."""
 
@@ -92,28 +92,11 @@ class VueloTurista(models.Model):
 #     def __str__(self):
 #         return self.reservacion_viajeContratado
 
-class Condicion(models.Model):
-    """Model definition for CondicionPaquete."""
-
-    idCondicion = models.AutoField(verbose_name="ID CONDICION PAQUETE", primary_key=True, help_text='ID unico')
-    tituloCondicion = models.CharField(verbose_name="Titulo", max_length=250, null=True, blank=True, help_text='')
-    descripcionCondicion = models.TextField(verbose_name="Descripcion de la condicion", max_length=1000, null=True, blank=True, help_text='')
-    # paquete_condicion = models.ManyToManyField(Paquete, verbose_name="Tags", help_text="")
-    estadoCondicion = models.BooleanField(verbose_name='Es Activo',default=True)
-
-    class Meta:
-        """Meta definition for CondicionPaquete."""
-
-        verbose_name = 'CondicionPaquete'
-        verbose_name_plural = 'CondicionPaquetes'
-
-    def __str__(self):
-        return self.descripcionCondicion
 
 class Paquete(models.Model):
     """Paquete Turistico."""
     idPaquete  = models.AutoField(primary_key=True, help_text="ID único para este Paquete")
-    tituloPaquete = models.CharField(max_length=250,verbose_name='titulo del paquete' , blank=True, null=True)
+    tituloPaquete = models.CharField(max_length=250,verbose_name='titulo del paquete' , blank=True, null=True, unique=True)
     nDiasPaquete = models.CharField(verbose_name='Cantidad de días', max_length=2, choices=CANTIDAD, blank=True, default='0', help_text='')
     nNochesPaquete = models.CharField(verbose_name='Cantidad de noches', max_length=2, choices=CANTIDAD, blank=True, default='0', help_text='')
     nHorasPaquete = models.CharField(verbose_name='Cantidad de Horas', max_length=2, choices=HORAS, blank=True, default='0', help_text='')
@@ -121,12 +104,13 @@ class Paquete(models.Model):
     precioPaquete = models.DecimalField(verbose_name='Precio',help_text='Precio en soles o dólares',max_digits=8, decimal_places=2, blank=True, null=True, default=500.00)
     unidadPorPrecioPaquete = models.CharField(verbose_name='Unidad por precio', max_length=1, choices=UNIDADPORPAGO, blank=True, null=True, default='p', help_text='')
     edadMinimaPaquete = models.PositiveIntegerField(default=5, validators=[MinValueValidator(1), MaxValueValidator(18)], blank=True, null=True,help_text='')
-    visitasPaquete = models.IntegerField(verbose_name='Visitas',help_text='', blank=True, null=True, default=0)
+    visitasPaquete = models.PositiveIntegerField(verbose_name='Visitas',help_text='', blank=True, null=True, default=0)
     mesPaquete = models.CharField(verbose_name='Mes de Disponiblidad', max_length=15, choices=MESES, null=True,blank=True, default='Todos los meses', help_text='')
-    disponibilidadPaquete = models.PositiveSmallIntegerField(verbose_name='Numero de Cupos', null=True,blank=True, help_text='', default=150, validators=[MinValueValidator(0), MaxValueValidator(150)])
+    disponibilidadPaquete = models.PositiveIntegerField(verbose_name='Numero de Cupos', null=True,blank=True, help_text='', default=150, validators=[MinValueValidator(0), MaxValueValidator(150)])
     imagenPrincipal = models.ImageField(verbose_name='Imagen de Fondo', upload_to='img/paquetes/', blank=True, null=True)
     imagenAvatar = models.ImageField(verbose_name='Imagen Pequeña', upload_to='img/paquetes/', blank=True, null=True)
-    condicion_paquete = models.ManyToManyField(Condicion, verbose_name="Condiciones", help_text="", null=True, blank=True)
+    fechaCreacionPaquete = models.DateTimeField(verbose_name='Fecha de Registro', auto_now_add=True , blank=True, null=True)
+    ofertaPaquete = models.BooleanField(verbose_name='Oferta', default=True,null=True, blank=True)
     estadoPaquete = models.BooleanField(verbose_name='Activo', default=True, null=True, blank=True)
     class Meta: 
         """Meta definition for Paquete."""
@@ -149,6 +133,26 @@ class Paquete(models.Model):
         Traer el Precio anterior
         """
         return self.precioPaquete+100
+
+class Condicion(models.Model):
+    """Model definition for CondicionPaquete."""
+
+    idCondicion = models.AutoField(verbose_name="ID CONDICION PAQUETE", primary_key=True, help_text='ID unico')
+    
+    tituloCondicion = models.CharField(verbose_name="Tipo de Condicion", max_length=250, help_text='', null=True, blank=True)
+    tipoCondicion = models.CharField(verbose_name="Tipo de Condicion", max_length=1, choices=CONDICIONPAQUETE, help_text='', null=True, blank=True)
+    descripcionCondicion = models.TextField(verbose_name="Descripcion de la condicion", max_length=1000, null=True, blank=True, help_text='')
+    paquete_condicion = models.ManyToManyField(Paquete, verbose_name="Tags", help_text="")
+    estadoCondicion = models.BooleanField(verbose_name='Es Activo',default=True)
+
+    class Meta:
+        """Meta definition for CondicionPaquete."""
+
+        verbose_name = 'CondicionPaquete'
+        verbose_name_plural = 'CondicionPaquetes'
+
+    def __str__(self):
+        return self.descripcionCondicion
 
 class DetallePaquete(models.Model):
     idDetallePaquete  = models.AutoField(primary_key=True, help_text="ID único para este Paquete")
@@ -199,8 +203,8 @@ class Reservacion(models.Model):
 
 class Rating(models.Model):
     # idRating = models.Autofield(primary_key=True, help_text="ID único para este rating")
-    # usuario_Rating = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True)
-    paquete_Rating = models.ForeignKey(Paquete, on_delete=models.SET_NULL, null=True, blank=True)
+    usuario_Rating = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
+    paquete_rating = models.ForeignKey(Paquete, on_delete=models.SET_NULL, null=True, blank=True)
     scoreRating = models.PositiveSmallIntegerField(verbose_name='Valoracion', null=True,blank=True, help_text='', default=1, validators=[MinValueValidator(1), MaxValueValidator(5)])
     # fechaCreacionRating = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación')
     estadoRating = models.BooleanField(verbose_name='Activo', default=True)

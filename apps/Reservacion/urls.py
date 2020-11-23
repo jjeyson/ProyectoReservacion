@@ -19,6 +19,7 @@ urlpatterns = [
     path('gestionLugar', views.GestionLugar.as_view(), name='gestionLugar'),
     path('gestionPaquete', views.PaqueteListView.as_view(), name='gestionPaquete'),
     path('agencia', views.Agencia.as_view(), name='agencia'),
+    path('ofertas', views.OfertasListView.as_view(), name='ofertas'),
     path('registrarReservacion', views.ReservacionCreateView.as_view(), name='registrarReservacion'),
     path('registrarPaquete',views.PaqueteCreateView.as_view(), name='registrarPaquete'),
     path('gestionUsuario',views.UsuarioListView.as_view(), name='gestionUsuario'),
@@ -34,6 +35,7 @@ urlpatterns = [
     path('registrarCondicion',views.CondicionCreateView.as_view(), name='registrarCondicion'),
     path('upload',views.upload_image_view, name='upload'),
     path('eliminarDetallePaquete/<int:pk>/',views.DetallePaqueteDeleteView.as_view(), name='eliminarDetallePaquete'),
+    path('paquetesAll',views.PaquetesAllListView.as_view(), name='paquetesAll'),
     path('recomendacion/',views.Recomendacion.as_view(), name='recomendacion'),
 ]
 

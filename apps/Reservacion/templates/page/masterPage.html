@@ -25,6 +25,7 @@
     <link href="{% static 'corlate/css/main.css' %} " rel="stylesheet">
     <link href="{% static 'corlate/css/responsive.css' %} " rel="stylesheet">
     <link href="{% static 'corlate/css/mycss.css' %} " rel="stylesheet">
+    <link href="{% static 'corlate/css/css_ribbon.css' %} " rel="stylesheet">
     <!-- StarRating -->
     
     
@@ -68,6 +69,7 @@
                 <div class="collapse navbar-collapse navbar-right">
                     <ul class="nav navbar-nav">
                         <li class="{% if request.path == '/index' %}active {% endif %}"><a href="{% url 'reservacion:index' %}">Inicio</a></li>
+                        <li class="{% if request.path == '/ofertas' %}active {% endif %}"><a href="{% url 'reservacion:ofertas' %}">Ofertas</a></li>
                         <li class="{% if request.path == '/agencia' %}active {% endif %}"><a href="{% url 'reservacion:agencia' %}">Agencia</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Nosotros <i class="fa fa-angle-down"></i></a>
@@ -87,9 +89,8 @@
                             <li class="{% if request.path == '/panelControl' %}active {% endif %}"><a href="{% url 'reservacion:panelControl' %}">Panel de Control</a></li>
                         {% endif %}
                         {% if user.is_authenticated%}
-                            <li class=""><a href="{% url 'reservacion:logout' %} "><i class="fas fa-power-off"></i> Cerrar Sesión</a></li>
+                            <li class=""><a href="{% url 'reservacion:logout' %} "><i class="fas fa-power-off"></i></a></li>
                         {% endif %}
-                            
                         
                     </ul>
                 </div>
@@ -105,7 +106,6 @@
     {% block content %}
         
     {% endblock content %}
-    
     <section id="bottom">
         <div class="container fadeInDown" data-wow-duration="1000ms" data-wow-delay="600ms">
             <div class="row">
@@ -154,18 +154,20 @@
         </div>
     </section>
     <!--/#bottom-->
-
+    
     <footer id="footer" class="midnight-blue">
         <div class="container">
             <div class="row">
+                
+    
                 <div class="col-sm-6">
                     &copy; 2020 <a target="_blank" href="http://wwww.facebook.com" title="Pagina Oficial de Facebook"> <strong>UPN - Prueba</strong></a> con Derechos Reservados
                 </div>
                 <div class="col-sm-6">
                     <ul class="pull-right">
                         <li><a href="{% url 'reservacion:index' %}">Inicio</a></li>
-                        <li><a href="#">Agencia</a></li>
-                        <li><a href="#">Conócenos</a></li>
+                        <li><a href="{% url 'reservacion:agencia' %}">Agencia</a></li>
+                        <li><a href="{% url 'reservacion:conocenos' %}">Conócenos</a></li>
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'reservacion:misPaquetes' %}">Mis Paquetes</a></li>
                         
@@ -217,7 +219,8 @@
     <script src="{% static 'corlate/js/main.js' %} "></script>
     <script src="{% static 'corlate/js/myscript.js' %} "></script>
     <!-- starr -->
-    
+    <!-- Mi propio Script -->
+    <script src="{% static 'AdminLTE/dist/js/myscript.js' %} "></script>
     {% block scripts %}
         
     {% endblock scripts %}

@@ -2,8 +2,10 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.sessions.models import Session
+# from django.contrib.sessions.models import Session
+from django.forms.widgets import FileInput
 from .models import *
+
 from apps.Reservacion.tuplas import *
 
 class Form_RegistroRating(forms.ModelForm):
@@ -50,7 +52,14 @@ class ReservacionForm(forms.ModelForm):
         }
 
 class RegistrarPaqueteForm(forms.ModelForm):
-    condicion_paquete = forms.ModelMultipleChoiceField(queryset=Condicion.objects.filter(estadoCondicion= True),)
+    ofertaPaquete = forms.BooleanField(initial=True,label='Oferta', required=False,widget=forms.CheckboxInput(
+                attrs = {
+                    'class':'form-control',
+                }))
+    incluido = forms.ModelMultipleChoiceField(label='Incluido',queryset=Condicion.objects.filter(estadoCondicion= True), widget=forms.SelectMultiple(attrs={'class':'form-control'}))
+    noIncluido = forms.ModelMultipleChoiceField(label='No Incluido',queryset=Condicion.objects.filter(estadoCondicion= True), widget=forms.SelectMultiple(attrs={'class':'form-control'}))
+    nHorasPaquete =  forms.IntegerField(label='Horas',widget=forms.NumberInput(attrs={'class': 'form-control','id':'nHorasPaquete'}),initial=0 , max_value=24, min_value=0)
+    # fechaCreacionPaquete = forms.DateTimeField(widget=forms.HiddenInput(),input_formats=["%Y-%m-%d %H:%M:%S"])
     estadoPaquete = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
     class Meta:
         model = Paquete
@@ -68,9 +77,11 @@ class RegistrarPaqueteForm(forms.ModelForm):
             'visitasPaquete': 'Visitas',
             'mesPaquete':'Mes Disponible',
             'disponibilidadPaquete':'Disponibilidad',
-            'imagenPaquete':'Imagen del Paquete',
-            'condicion_paquete':'Condiciones',
+            'imagenPrincipal':'Imagen del Paquete',
+            'imagenAvatar':'Imagen Pequeña',
+            'ofertaPaquete':'Es Oferta',
             'estadoPaquete':'Activo',
+            'fechaCreacionPaquete':'Fecha de Creacion',
         }
         widgets = {
             'tituloPaquete': forms.TextInput(attrs={'class': 'form-control',
@@ -85,13 +96,19 @@ class RegistrarPaqueteForm(forms.ModelForm):
             'precioPaquete': forms.NumberInput(attrs={'class': 'form-control','id':'precioPaquete', 'default':1000}),
             #'estadoPaquete': forms.RadioSelect(attrs={'class': 'form-control','id':'estadoPaquete'}),
             'visitasPaquete': forms.NumberInput(attrs={'class': 'form-control','id':'visitasPaquete','disabled': True, 'default':0}),
-            'nHorasPaquete': forms.NumberInput(attrs={'class': 'form-control','id':'nHorasPaquete'}),
+            #'nHorasPaquete': forms.NumberInput(attrs={'class': 'form-control','id':'nHorasPaquete'}),
+            'imagenPrincipal': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'imagenAvatar': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            # 'ofertaPaquete': forms.ChoiceField(choices=[('Si', 'True'), ('No', 'False')],attrs={'class': 'form-control'}),
         }
     def __init__(self, *args, **kwargs):
-        if kwargs.get('instance'):
-            initial = kwargs.setdefault('initial', {})
-            initial['condicion_paquete'] = [t.pk for t in
-                kwargs['instance'].condicion_paquete.all()]
+        super(RegistrarPaqueteForm, self).__init__(*args, **kwargs)
+        for fieldname in ['imagenPrincipal','imagenAvatar','precioPaquete','unidadPorPrecioPaquete', 'tipoMonedaPaquete']:
+            self.fields[fieldname].help_text = None
+        # if kwargs.get('instance'):
+        #     initial = kwargs.setdefault('initial', {})
+        #     initial['condicion_paquete'] = [t.pk for t in
+        #         kwargs['instance'].condicion_paquete.all()]
 
         forms.ModelForm.__init__(self, *args, **kwargs)
     
@@ -139,8 +156,9 @@ class SignUpForm(UserCreationForm):
         )
 
 class Form_RegistroUsuario(forms.ModelForm):
+
     is_active = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
-    is_staff = forms.BooleanField(initial=False,label='Administrador',widget=forms.CheckboxInput(
+    is_staff = forms.BooleanField(initial=False,label='Administrador', required=False,widget=forms.CheckboxInput(
                 attrs = {
                     'class':'form-control',
                 }))
@@ -155,6 +173,7 @@ class Form_RegistroUsuario(forms.ModelForm):
             'class':'form-control',
             'placeholder':'Ingrese su contraseña...',
             'id': 'password1',
+            'name': 'password1',
             'required': 'required',
         }))
     password2 = forms.CharField(label='Clave de confirmación',widget=forms.PasswordInput(
@@ -162,11 +181,13 @@ class Form_RegistroUsuario(forms.ModelForm):
             'class':'form-control',
             'placeholder':'Ingrese nuevamente su contraseña...',
             'id': 'password2',
+            'id': 'password2',
             'required': 'required',
         }))
+    telefonoUsuario = forms.CharField(label='Telefono', max_length=9, widget=forms.TextInput(attrs={'class': 'form-control','id':'telefonoUsuario', 'name':'telefonoUsuario', 'default':1000}), required=False)
     class Meta:
         model = Usuario
-        fields = ( 'username','first_name','last_name', 'DNIUsuario','email', 'is_staff', 'imagenUsuario')
+        fields = ( 'username','first_name','last_name', 'DNIUsuario','telefonoUsuario','email','password1','password2', 'is_staff', 'imagenUsuario')
         widgets = {
             'first_name': forms.TextInput(
                 attrs = {
@@ -192,7 +213,8 @@ class Form_RegistroUsuario(forms.ModelForm):
                 attrs = {
                     'class':'form-control',
                     'placeholder':'Ingrese su email',
-                })
+                }),
+            'imagenUsuario': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         #ordering = ['-fecha']
             }
     def __init__(self, *args, **kwargs):
@@ -216,7 +238,7 @@ class Form_RegistroUsuario(forms.ModelForm):
 
 class Form_ModificarUsuario(forms.ModelForm):
     is_active = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
-    is_staff = forms.BooleanField(initial=False,label='Administrador',widget=forms.CheckboxInput(
+    is_staff = forms.BooleanField(initial=False,required=False, label='Administrador',widget=forms.CheckboxInput(
                 attrs = {
                     'class':'form-control',
                 }))
@@ -226,9 +248,10 @@ class Form_ModificarUsuario(forms.ModelForm):
     last_name = forms.CharField(label='Apellidos', widget=forms.TextInput(attrs={
         'class':'form-control',
         'placeholder':'Ingrese su apellido',}))
+    telefonoUsuario = forms.CharField(label='Telefono', max_length=9, widget=forms.TextInput(attrs={'class': 'form-control','id':'telefonoUsuario', 'name':'telefonoUsuario', 'default':1000}), required=False)
     class Meta:
         model = Usuario
-        fields = ( 'username','first_name','last_name', 'DNIUsuario','email', 'is_staff', 'imagenUsuario')
+        fields = ( 'username','first_name','last_name', 'DNIUsuario','telefonoUsuario','email', 'is_staff', 'imagenUsuario')
         widgets = {
             'first_name': forms.TextInput(
                 attrs = {
@@ -248,7 +271,8 @@ class Form_ModificarUsuario(forms.ModelForm):
             'username': forms.TextInput(
                 attrs={
                     'class':'form-control',
-                    'placeholder':'Ingrese el nombre de usuario'
+                    'placeholder':'Ingrese el nombre de usuario',
+                    'autofocus': True
                 }),
             'email': forms.EmailInput(
                 attrs = {
@@ -266,12 +290,15 @@ class Form_ModificarUsuario(forms.ModelForm):
 class DetallePaqueteForm(forms.ModelForm):
     """Formulario de detalle de Paquete."""
     estadoDetallePaquete = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
-    paquete_detallePaquete = forms.ModelChoiceField(label='IDPaquete',queryset=Paquete.objects.all())
+    paquete_detallePaquete = forms.ModelChoiceField(widget=forms.HiddenInput(),label='IDPaquete',queryset=Paquete.objects.all())
     class Meta:
         """Meta definition for DetallePaqueteform."""
 
         model = DetallePaquete
         fields = ('nroDiaDetallePaquete', 'tituloDetallePaquete','paquete_detallePaquete','descripcionDetallePaquete','imagenDetallePaquete')
+        labels ={
+            'tituloDetallePaquete':'Titulo del detalle del Paquete',
+        }
         widgets = {
             'tituloDetallePaquete': forms.TextInput(
                 attrs = {
@@ -297,8 +324,9 @@ class DetallePaqueteForm(forms.ModelForm):
     
 class CondicionForm(forms.ModelForm):
     """Formulario de detalle de Paquete."""
+    tituloCondicion = forms.CharField(initial='', widget=forms.HiddenInput(), required=False)
     estadoCondicion = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
-    
+    tipoCondicion = forms.ChoiceField(label='Incluido', choices=CONDICIONPAQUETE, initial='i',widget=forms.Select(choices=CONDICIONPAQUETE, attrs = {'class':'form-control', 'id':'tipoCondicion', 'name':'tipoCondicion'}) )
     class Meta:
         """Meta definition for DetallePaqueteform."""
 
@@ -314,7 +342,7 @@ class CondicionForm(forms.ModelForm):
                 attrs = {
                     'class':'form-control',
                     'placeholder':'Ingrese la descripción',
-                })
+                }),
         #ordering = ['-fecha']
             }
 

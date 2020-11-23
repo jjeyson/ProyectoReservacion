@@ -111,3 +111,7 @@ NIÑOS = (
         ('9', '9 '),
         ('10', '10 '),
     )
+CONDICIONPAQUETE = (
+        ('i', 'Incluida '),
+        ('n', 'No Incluida '),
+    )

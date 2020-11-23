@@ -125,10 +125,19 @@
                     <hr>
                     <div class="row">
                         <aside class="col-md-4">
-                            <a href="#" class="blog_cat">INCLUYE</a>
+                            <a href="#" class="blog_cat">INCLUIDO</a>
                         </aside>
                         <div class="col-md-8">
-                            <ul>
+                            <ol>
+                                {% for obj in condiciones %}
+                                
+                                    {% if obj.tipoPaquete == i %}
+                                        <li>{{obj.descripcionCondicion}} </li>
+                                    {% endif %}
+                                    
+                                {% endfor %}
+                            </ol>
+                            <!-- <ul>
                                 <li>Traslados terminal terrestre – Hotel - Terminal</li>
                                 <li>3 Noches de hotel 3 estrellas en habitación doble/Matrimonial</li>
                                 <li>Guía Oficial de Turismo / Movilidad Turística local</li>
@@ -137,19 +146,28 @@
                                 <li>Ticket de Ingreso a los Atractivos Turísticos</li>
                                 <li>Implemento para visitar Caverna(Botas, Linterna)</li>
                                 <li>Tickets en las telecabinas apara Kuelap</li>
-                            </ul>
+                            </ul> -->
                         </div>
 
                     </div>
                     <hr>
                     <div class="row">
                         <aside class="col-md-4">
-                            <a href="#" class="blog_cat">NO INCLUYE</a>
+                            <a href="#" class="blog_cat">NO INCLUIDO</a>
                         </aside>
                         <div class="col-md-8">
-                            <ul>
+                            <ol>
+                                {% for obj in condiciones %}
+                                
+                                    {% if obj.tipoPaquete == n %}
+                                        <li>{{obj.descripcionCondicion}} </li>
+                                    {% endif %}
+                                    
+                                {% endfor %}
+                            </ol>
+                            <!-- <ul>
                                 <li>Pasajes de ciudad de origen viceversa</li>
-                            </ul>
+                            </ul> -->
                         </div>
                         
                     </div>

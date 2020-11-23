@@ -152,10 +152,17 @@
 
     <div class="page-title" style="background-image: url('static/corlate/images/portfolio/fondo2.jpg')">
         <h1>Bienvenido de nuevo {{user.first_name}} {{user.last_name}}</h1>
-
-        
+        {% if user.is_staff and user.is_authenticated %}
+        <div class="single-pricing featured">
+            <a onclick="abrir_modal_creacion('{% url 'reservacion:paquetesAll' %}');" class="btn btn-sm btn-default">Todos los Paquetes</a>
+        </div>
+    {% endif %}
              
     </div>
+    <div class="modal fade" id="creacion" role="dialog">
+
+    </div>
+    
     <section id="recent-works">
         <div class="container">
             <div class="center fadeInDown">
@@ -164,13 +171,23 @@
             </div>
             <div class="row">
                 
+                
                 {% if object_list %}
                     {% for obj in object_list %}
                     <div class="col-md-4 col-sm-6 single-team">
                         <div class="inner">
+                            
+                            {% if obj.ofertaPaquete == True %}
+                            <div class="box">
+                                <div class="ribbon ribbon-top-left"><span>Oferta</span></div>
+                                <div class="ribbon ribbon-top-right"><span>Oferta</span></div>
+                                <!-- <div class="ribbon ribbon-bottom-left"><span>ribbon</span></div>
+                                <div class="ribbon ribbon-bottom-right"><span>ribbon</span></div> -->
+                              </div>
+                            {% endif %}
                             <div class="team-img">
                                 <!-- <a href="{% url 'reservacion:registrarReservacion' %}"><img src="https://www.perutogethertravel.com/wp-content/uploads/2019/06/FIESTAS-PATRIAS-CHACHAPOYAS1-700x466.jpg" alt=""></a>  -->
-                                <a href="{% url 'reservacion:registrarReservacion' %}"><img src="{{ obj.get_imagePaquete }}" alt="Imagen de {{obj.tituloPaquete}}" width="400" height="300"></a>
+                                <a href="{% url 'reservacion:registrarReservacion' %}"><img src="{{ obj.get_imageAvatar }}" alt=""></a>
                             </div>
                             <div class="team-content">
                                 <h4></h4>
@@ -179,22 +196,23 @@
                                 <span class="desg">{{obj.nDiasPaquete}} Días</span>
                                 <br/>
                                 <p><span class="desg"> <h1><strong>{{obj.precioPaquete}} </strong></h1> </span></p>
+                                
                                 <div class="clearfix text-center">
                                     <a href="{% url 'reservacion:detallePaquete' obj.pk %}" class="btn btn-primary">Ver Detalle</a>
-                                    <a class="btn btn-primary" href="{% url 'reservacion:registrarReservacion' %}">Registrarte</a>
+                                    <a class="btn btn-primary" href="{% url 'reservacion:registrarReservacion' %}">Reservar</a>
                                 </div>
-                                <form action="{% url 'reservacion:index' %}" method="GET">
-                                    {{form_rating.as_table}}
-                                    <input type="text" value="{{obj.idPaquete}}"  id="idPaquete" name="idPaquete" hidden >
-                                    <div class="card-footer">
-                                        <button name="btnCalificar" id="btnCalificar" type="submit" class="btn btn-primary">Calificar</button>
-                                    </div>
-                                </form>
+                                <h2>Calificar</h2>
+                                    <form action="{% url 'reservacion:index' %} " method="get">
+                                        {{form_rating.as_table}}
+                                        <input type="number" name="idPaquete" id="idPaquete" value="{{obj.idPaquete}}" hidden>
+                                        <input type="submit" value="Calificar">
+                                    </form>
                                 <h2>Calificación</h2>
 
                                 {% for i in loop_times %}
                                     <span class="fa fa-star checked"></span>
                                 {% endfor %}
+                                
                             </div>
                         </div>
                     </div>
