@@ -8,6 +8,21 @@ from .models import *
 
 from apps.Reservacion.tuplas import *
 
+class Form_BusquedaPaquete(forms.Form):
+    busquedaPaquete = forms.CharField(label=False, initial='', widget=forms.TextInput(attrs= {'class':'form-control form-control-navbar','id':'busquedaPaquete', 'name':'busquedaPaquete', 'type':'search', 'placeholder':'Buscar un Paquete', 'aria-label':'Search'}))
+    # def __init__(self, *args, **kwargs):
+    #     super(Form_BusquedaPaquete, self).__init__(*args, **kwargs)
+    #     for fieldname in ['busquedaPaquete']:
+    #         self.fields[fieldname].hidden_fields = True
+    # {% for field in form.hidden_fields %}
+    #     {{ field }}
+    # {% endfor %}
+    # {% for field in form.visible_fields %}
+    #     {{ field.label }} {{ field }}
+    # {% endfor %}
+
+
+
 class Form_RegistroRating(forms.ModelForm):
     estadoRating = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
     scoreRating = forms.IntegerField(label='Calificacion', max_value=5, min_value=0, initial=0, widget=forms.NumberInput(attrs= {'class':'form-control','id':'scoreRating', 'name':'scoreRating'}),)
@@ -56,8 +71,9 @@ class RegistrarPaqueteForm(forms.ModelForm):
                 attrs = {
                     'class':'form-control',
                 }))
-    incluido = forms.ModelMultipleChoiceField(label='Incluido',queryset=Condicion.objects.filter(estadoCondicion= True), widget=forms.SelectMultiple(attrs={'class':'form-control'}))
-    noIncluido = forms.ModelMultipleChoiceField(label='No Incluido',queryset=Condicion.objects.filter(estadoCondicion= True), widget=forms.SelectMultiple(attrs={'class':'form-control'}))
+    condicion_paquete = forms.ModelMultipleChoiceField(label='Incluido',queryset=Condicion.objects.filter(estadoCondicion= True), widget=forms.SelectMultiple(attrs={'class':'form-control'}))
+    #noIncluido = forms.ModelMultipleChoiceField(label='No Incluido',queryset=Condicion.objects.filter(estadoCondicion= True), widget=forms.SelectMultiple(attrs={'class':'form-control'}))
+    mes_paquete = forms.ModelMultipleChoiceField(label='Especificar Mes',queryset=Mes.objects.filter(estadoMes=True),widget=forms.SelectMultiple(attrs={'class':'form-control' }))
     nHorasPaquete =  forms.IntegerField(label='Horas',widget=forms.NumberInput(attrs={'class': 'form-control','id':'nHorasPaquete'}),initial=0 , max_value=24, min_value=0)
     # fechaCreacionPaquete = forms.DateTimeField(widget=forms.HiddenInput(),input_formats=["%Y-%m-%d %H:%M:%S"])
     estadoPaquete = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
@@ -82,6 +98,7 @@ class RegistrarPaqueteForm(forms.ModelForm):
             'ofertaPaquete':'Es Oferta',
             'estadoPaquete':'Activo',
             'fechaCreacionPaquete':'Fecha de Creacion',
+            'mes_paquete':'Especificar Meses',
         }
         widgets = {
             'tituloPaquete': forms.TextInput(attrs={'class': 'form-control',

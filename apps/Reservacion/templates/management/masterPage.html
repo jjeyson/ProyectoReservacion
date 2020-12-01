@@ -227,6 +227,14 @@
                   </p>
                 </a>
               </li>
+              <li class="nav-item {% if request.path == '/recomendacionPersonalizada' %}active {% endif %}">
+                <a href="{% url 'reservacion:recomendacionPersonalizada' %} " class="nav-link {% if request.path == '/recomendacionPersonalizada' %}active {% endif %}">
+                  <i class="nav-icon far fa-image"></i>
+                  <p>
+                    RECOMENDACION PERSONAL
+                  </p>
+                </a>
+              </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

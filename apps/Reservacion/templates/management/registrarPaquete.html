@@ -23,7 +23,7 @@
 <div class="card card-primary">
   <div class="card-header">
   
-    <h3 class="card-title">{{page_title|upper}}</h3>
+    <h3 class="card-title">{{page_title|upper}} | Ultimo Paquete Agregado: {{latest.tituloPaquete}}</h3>
 </div>
 
 <div class="row">
@@ -120,5 +120,14 @@
 </div>
 {% endblock content %}
 
+{% block scripts %}
+    <script type="text/javascript">
+        $(function () {
+            // When the page has finished loading,
+            // autofocus on the username field
+            $('input#id_tituloPaquete').focus();
+        });
+    </script>
+{% endblock scripts %}
   
 

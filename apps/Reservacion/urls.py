@@ -37,6 +37,7 @@ urlpatterns = [
     path('eliminarDetallePaquete/<int:pk>/',views.DetallePaqueteDeleteView.as_view(), name='eliminarDetallePaquete'),
     path('paquetesAll',views.PaquetesAllListView.as_view(), name='paquetesAll'),
     path('recomendacion/',views.Recomendacion.as_view(), name='recomendacion'),
+    path('recomendacionPersonalizada',views.RecomendacionPersonalizada.as_view(), name='recomendacionPersonalizada'),
 ]
 
     # path('login',include('django.contrib.auth.urls'),name='login'),

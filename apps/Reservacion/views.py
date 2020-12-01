@@ -1,3 +1,9 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from apyori import apriori
+from apyori import apriori
+from re import split
 import json
 import itertools
 from datetime import datetime
@@ -10,8 +16,8 @@ from django.urls import reverse_lazy, reverse
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponseRedirect
-from django.db.models import Count
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.db.models import Q, Count
 from .forms import *
 from .models import *
 from .tuplas import *
@@ -75,8 +81,8 @@ class IndexListView(ListView):
             else:
                 is_empty = not self.object_list
             if is_empty:
-                raise Http404(_('Empty list and “%(class_name)s.allow_empty” is False.') % {
-                    'class_name': self.__class__.__name__,
+                raise Http404(_('Empty list and “%(IndexListView)s.allow_empty” is False.') % {
+                    'IndexListView': self.__class__.__name__,
                 })
         scoreRating = request.GET.get('scoreRating')
         idPaquete= request.GET.get('idPaquete')
@@ -98,20 +104,19 @@ class IndexListView(ListView):
             obj = Paquete.objects.get(idPaquete = idPaquete)
             obj = Rating.objects.create(scoreRating=scoreRating, paquete_rating=obj)
             obj.save()
-            
         return self.render_to_response(self.get_context_data(suma=suma))
 
-# class RatingCreateView(JSONFormMixin, CreateView):
-#     model = Rating
+# class RatingTemplateView(JSONFormMixin, TemplateView):
 #     form_class = Form_RegistroRating
 
 
 class PaquetesAllListView(ListView):
     model = Paquete
     template_name = "page/paquetesAll.html"
-    queryset = Paquete.objects.filter(estadoPaquete= True, disponibilidadPaquete__gte = 1)
+    queryset = Paquete.objects.filter(estadoPaquete= True, disponibilidadPaquete__gte = 1).order_by('-fechaCreacionPaquete')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['total'] = Paquete.objects.filter(estadoPaquete= True, disponibilidadPaquete__gte = 1).order_by('-fechaCreacionPaquete').count()
         context["page_title"] = "Todos Los Paquetes Disponibles"
         return context
     
@@ -119,7 +124,7 @@ class PaquetesAllListView(ListView):
 
 
 class DetallePaqueteDetailView(DetailView):
-    model = DetallePaquete
+    # model = DetallePaquete
     template_name = "page/detallePaquete.html"
     model = Paquete
 
@@ -133,7 +138,8 @@ class DetallePaqueteDetailView(DetailView):
         Paquete.objects.filter(idPaquete=self.object.pk).update(visitasPaquete=self.request.session['num_visits'])
         context['listaDetalles'] = DetallePaquete.objects.filter(paquete_detallePaquete = self.object.pk)
         context['page_title'] = 'Detalle del Paquete'
-        context['condiciones'] = Condicion.objects.filter(paquete_condicion=self.request.session.get('paqueteID'))
+        context['condiciones'] = Paquete.objects.values('condicion_paquete').filter(estadoPaquete=True)
+        # print(context['condiciones'])
         return context
 
 class Conocenos(TemplateView):
@@ -294,25 +300,6 @@ class Busqueda(TemplateView):
         return context
     
 
-
-# @login_required
-# def buscar_libro(request):
-#     if(request.GET.get("txt_buscar")):
-#         #mensaje = "Libro Buscado: %r"%request.GET["txt_nombre"]
-#         #libro = request.GET["txt_buscar"]
-#         query = request.GET.get("txt_buscar")
-#         if len(query)>50:
-#             mensaje = "Titulo demasiado Largo, porfavor vuelva a intentarlo"
-#         else:
-#             #resultado = Libro.objects.filter(tituloLibro__resumenLibro__icontains = libro
-#             #).distinct()
-#             querys = (Q(tituloLibro__icontains=query) | Q(resumenLibro__icontains=query))
-#             #querys |= Q(editorialLibro__icontains=query)
-
-#             libros = Libro.objects.filter(querys)
-#             return render(request,"GestionPrestamo/form_Busqueda_Libro.html", {'libros':libros,"query":query})
-
-
 class GestionHotel(TemplateView):
     template_name = "management/gestionHotel.html"
 
@@ -338,7 +325,45 @@ class PaqueteListView(ListView):
         context['page_title'] = "Lista de "+ Paquete._meta.verbose_name_plural.title()
         context['entity'] = Paquete._meta.verbose_name.title()
         context['total'] = Paquete.objects.filter(estadoPaquete=True).count()
+        context['form_Busqueda'] = Form_BusquedaPaquete()
         return context
+    def get(self, request, *args,**kwargs):
+        self.object_list = self.get_queryset()
+        allow_empty = self.get_allow_empty()
+        if not allow_empty:
+            # When pagination is enabled and object_list is a queryset,
+            # it's better to do a cheap query than to load the unpaginated
+            # queryset in memory.
+            if self.get_paginate_by(self.object_list) is not None and hasattr(self.object_list, 'exists'):
+                is_empty = not self.object_list.exists()
+            else:
+                is_empty = not self.object_list
+            if is_empty:
+                raise Http404(_('Empty list and “%(IndexListView)s.allow_empty” is False.') % {
+                    'IndexListView': self.__class__.__name__,
+                })
+        if(request.GET.get("busquedaPaquete") is None):
+            # contexto = super(DetallePaquete, self).get_context_data(**kwargs)
+            busquedaPaquete = str(request.GET.get('busquedaPaquete'))
+            NoseHaBuscado = True
+            # return self.render_to_response(self.get_context_data())
+            return self.render_to_response(self.get_context_data(busquedaPaquete=busquedaPaquete, NoseHaBuscado=NoseHaBuscado))
+        else:
+            NoseHaBuscado = False
+            busquedaPaquete = str(request.GET.get('busquedaPaquete'))
+            page_title= "Lista de "+ Paquete._meta.verbose_name_plural.title()
+            title = "Resultado de Busqueda"
+            if len(str(busquedaPaquete))>50:
+                mensaje = "Titulo demasiado Largo, porfavor vuelva a intentarlo"
+                ok = False
+                return self.render_to_response(self.get_context_data(mensaje=mensaje,busquedaPaquete=busquedaPaquete, ok=ok, page_title=page_title,NoseHaBuscado=NoseHaBuscado, title=title))
+            else:
+                ok = True
+                paquetes = Paquete.objects.filter(tituloPaquete__icontains=busquedaPaquete)
+                total = Paquete.objects.filter(tituloPaquete__icontains=busquedaPaquete).count()
+                # return self.render_to_response(self.get_context_data())
+                return self.render_to_response(self.get_context_data(paquetes=paquetes,busquedaPaquete=busquedaPaquete, ok=ok, page_title=page_title, total=total, NoseHaBuscado=NoseHaBuscado, title=title))
+            
 
 class DetallePaqueteListView(ListView):
     model = DetallePaquete
@@ -375,10 +400,12 @@ class PaqueteCreateView(CreateView,LoginRequiredMixin):
         self.object= None
         form_class =self.get_form_class()
         form = self.get_form(form_class)
+        latest = Paquete.objects.values('tituloPaquete').filter().order_by('-fechaCreacionPaquete')[0]
+
         # myDate = datetime.now()
         # formatedDate = myDate.strftime("%Y-%m-%d %H:%M:%S")
         # form.fields['fechaCreacionPaquete'].initial = formatedDate
-        return self.render_to_response(self.get_context_data(form=form))
+        return self.render_to_response(self.get_context_data(form=form, latest=latest))
     def form_valid(self, form):
         paquete = form.save(commit=False)
         paquete.save()
@@ -445,22 +472,33 @@ class UsuarioCreateView(CreateView):
         self.object = None
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        
-        usernamelatest = Usuario.objects.values('username').filter().order_by('-id')[0]
-        usernamelatest2 = Usuario.objects.values('last_name', 'first_name').filter().order_by('-id')[0]
-        nameOfUser = usernamelatest2['first_name'] +' '+ usernamelatest2['last_name']
-        latestUser = usernamelatest['username']
-        form.fields['username'].initial = latestUser
-        context = self.get_context_data()
-        context['latestUser'] = latestUser
-        form.fields['email'].initial = latestUser+'@gmail.com'
-        form.fields['password1'].initial = latestUser+'1234'
-        form.fields['password2'].initial = latestUser+'1234'
+        new_user = Usuario.objects.values('username','last_name','first_name').filter().order_by('-id')[0]
+        nameOfUser = new_user['first_name'] +' '+ new_user['last_name']
+        new_number = new_user['username']
+        lst_int =split('\D+', new_number)
+        #lst_int2 =split('user', 'soledad')
+        numberOfUser = 0
+        band = False
+        # print(lst_int)
+        # print(lst_int2)
+        # lst_int = [int(x) for x in new_number.split("user")]
+        for n in lst_int:
+            if n != "" and not(band):
+                numberOfUser=1+ int(n)
+                band =True
+            else:
+                numberOfUser = 0
+        if numberOfUser == 0:
+            form.fields['username'].initial = ''
+            form.fields['email'].initial = 'unknow'+'@gmail.com'
+        else:
+            form.fields['username'].initial = 'user'+str(numberOfUser)
+            form.fields['email'].initial = 'user'+str(numberOfUser)+'@gmail.com'
         
         #contexto = super(DetallePaquete, self).get_context_data(**kwargs)
         # form.fields['paquete_detallePaquete'].queryset= Paquete.objects.filter(idPaquete=self.request.session['paqueteID']) 
         return self.render_to_response(
-            self.get_context_data(form=form, latestUser=latestUser, nameOfUser=nameOfUser))
+            self.get_context_data(form=form, new_number=new_number, nameOfUser=nameOfUser))
 
 class UsuarioUpdateView(UpdateView):
     model = Usuario
@@ -672,4 +710,63 @@ class Recomendacion(TemplateView):
         context['listaOfertas'] = Paquete.objects.all().filter(estadoPaquete=True).order_by('precioPaquete')[:3]
         # print(context['listaCalificados2'])
         return context
+
+class RecomendacionPersonalizada(TemplateView):
+    template_name = "management/recomendacionPersonalizada.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super(RecomendacionPersonalizada, self).get_context_data(**kwargs)
+        context['page_title'] = 'Recomendacion Personalizada'
+        # store_data = pd.read_csv('C:\\Users\\georg\OneDrive - Universidad Privada del Norte\\Libre\\store_data.csv',header=None)
+        # records = []
+        # j = 0
+        # for i in range(0, 7501):
+        #     records.append([str(store_data.values[i,j]) for j in range(0, 20)])
+        #     if i == 10:
+        #         break
+        #     j=j+1
+        # for item in records:
+        #     print(item)
+        #-----------------------------
+        
+        # n = Paquete.objects.filter(estadoPaquete=True).count()
+        
+        paquetes = Paquete.objects.filter(estadoPaquete=True)
+        users = Usuario.objects.filter(is_active= True)
+        fila1 = []
+        fila2 = []
+        for item in users:
+            fila1.append(item)
+            
+        for item in paquetes:
+            fila2.append(item)
+            print(item)
+        tabla = []
+        tabla.append(fila1)
+        tabla.append(fila2)
+        print(tabla)
+        # association_rules = apriori(records, min_support=0.0045, min_confidence=0.2, min_lift=3, min_length=2)
+        # association_results = list(association_rules)
+        # for item in association_results:
+
+        #     # first index of the inner list
+        #     # Contains base item and add item
+        #     pair = item[0] 
+        #     items = [x for x in pair]
+        #     print("Rule: " + items[0] + " -> " + items[1])
+
+        #     #second index of the inner list
+        #     print("Support: " + str(item[1]))
+
+        #     #third index of the list located at 0th
+        #     #of the third index of the inner list
+
+        #     print("Confidence: " + str(item[2][0][2]))
+        #     print("Lift: " + str(item[2][0][3]))
+        #     print("=====================================")
+        #print(store_data.head())
+        return context
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
     

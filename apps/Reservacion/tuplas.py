@@ -56,18 +56,7 @@ HORAS=(
         ('24', '24 '),
     )
 MESES=(
-        ('Enero', 'Enero'),
-        ('Febrero', 'Febrero'),
-        ('Marzo', 'Marzo'),
-        ('Abril', 'Abril'),
-        ('Mayo', 'Mayo'),
-        ('Junio', 'Junio'),
-        ('Julio', 'Julio'),
-        ('Agosto', 'Agosto'),
-        ('Septiembre', 'Septiembre'),
-        ('Octubre', 'Octubre'),
-        ('Noviembre', 'Noviembre'),
-        ('Diciembre', 'Diciembre'),
+        ('Especificar', 'Especificar'),
         ('Todos los meses', 'Todos los meses')
     )
 SCORE_CHOICES = zip( range(1,18), range(1,18) )
