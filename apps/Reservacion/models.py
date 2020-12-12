@@ -1,9 +1,10 @@
 
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from apps.Reservacion.tuplas import *
+from django.urls import reverse
 #from django_google_maps import fields as map_fields 
 # Create your models here.
 
@@ -39,14 +40,6 @@ class Usuario(AbstractUser):
             return '{}{}'.format(settings.MEDIA_URL, self.imagenUsuario)
         return '{}{}'.format(settings.STATIC_URL,'img/users/empty.png')
 
-class TipoUsuario(models.Model):
-    idTipoUsuario = models.AutoField(primary_key=True, help_text="ID único para esta Tipo de Usuario")
-    nombreTipoUsuario = models.CharField(max_length=100, verbose_name='Nombre')
-    fechaCreacionTipoUsuario = models.DateTimeField(auto_now_add=True, blank=True, verbose_name='Fecha de Creacion')
-    estadoTipoUsuario = models.BooleanField(verbose_name='Activo', default=True)
-    def __str__(self):
-        """Cadena para representar el objeto Modelo (en el sitio de administración, etc.)"""
-        return self.nombreTipoUsuario
 
 class Hotel(models.Model):
     idHotel = models.AutoField(primary_key=True, help_text="ID único para Hotel")
@@ -219,6 +212,28 @@ class Rating(models.Model):
 
     def __str__(self):
         return str(self.pk)
+
+class VisitaUsuario(models.Model):
+    # idVisitasUsuario = models.AutoField(_("IDVisitaPaquete"), primary_key=True, help_text='ID único para Visitas')
+    usuario_visitas = models.OneToOneField(Usuario, on_delete=models.CASCADE ,verbose_name='Usuario que pertenece', primary_key=True)
+    paquete_visitaUsuario = models.ManyToManyField(Paquete, verbose_name='Paquetes del Usuario que Calificaron')
+    
+
+    class Meta:
+        verbose_name = 'visitausuario'
+        verbose_name_plural = 'visitasusuarios'
+    
+    # @transaction.commit_on_success
+    # def save(self, *args, **kwargs):
+    #     if not self.usuario_visitas_id:
+    #         self.student_group, _ = Group.objects.get_or_create(name='_course_' + self.id + '_student')
+    #     super(Course, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.usuario_visitas
+
+    def get_absolute_url(self):
+        return reverse("visitausuario_detail", kwargs={"pk": self.pk})
 
 
 

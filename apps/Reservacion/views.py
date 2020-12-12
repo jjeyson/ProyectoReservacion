@@ -1,8 +1,10 @@
+import sys
+import os
+import csv
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from apyori import apriori
-from apyori import apriori
+from apyori import apriori, load_transactions
 from re import split
 import json
 import itertools
@@ -31,38 +33,67 @@ class IndexListView(ListView):
     #context_object_name = 'object_list'
     #queryset = Paquete.objects.filter(estadoPaquete = True)
     def get_queryset(self):
-        
-        lista = []
-        #lista de paquetes mas Baratos
-        r1 = Paquete.objects.all().values('idPaquete','tituloPaquete', 'precioPaquete', 'disponibilidadPaquete').filter(estadoPaquete= True).order_by('precioPaquete')[:2]
-        for obj in r1:
-            if  obj['idPaquete'] not in lista:
-                lista.append(obj['idPaquete'])
-        
-        # lista de paquetes con mejor promedio Score
-        r2 = Rating.objects.all().values('paquete_rating','paquete_rating__tituloPaquete','paquete_rating__precioPaquete', 'paquete_rating__idPaquete').filter(estadoRating = True, paquete_rating__estadoPaquete = True).annotate(promedio = models.Sum('scoreRating')/Count('paquete_rating__tituloPaquete')).order_by('-promedio')[:2]
-        for obj in r2:
-            if  obj['paquete_rating__idPaquete'] not in lista:
-                lista.append(obj['paquete_rating__idPaquete'])
-        #lista de paquetes mas visitados
-        r3 = Paquete.objects.filter(estadoPaquete = True).order_by('-visitasPaquete')[:2]
-        for obj in r3:
-            if  obj.idPaquete not in lista:
-                lista.append(obj.idPaquete)
+        if str(self.request.user) == 'AnonymousUser':
+            lista = []
+            #lista de paquetes mas Baratos
+            r1 = Paquete.objects.all().values('idPaquete','tituloPaquete', 'precioPaquete', 'disponibilidadPaquete').filter(estadoPaquete= True).order_by('precioPaquete')[:2]
+            for obj in r1:
+                if  obj['idPaquete'] not in lista:
+                    lista.append(obj['idPaquete'])
             
-        #lista de paquetes mas reservados
-        r4 = Reservacion.objects.all().values('paquete_reservacion', 'paquete_reservacion__idPaquete').annotate(total=Count('usuario_Reservacion')).order_by('-total')[:2]
-        for obj in r4:
-            if  obj['paquete_reservacion__idPaquete'] not in lista:
-                lista.append(obj['paquete_reservacion__idPaquete'])
-        #lista de recien añadidos
-        r5 = Paquete.objects.filter(estadoPaquete = True).order_by('-fechaCreacionPaquete')[:1]
-        for obj in r5:
-            if  obj.idPaquete not in lista:
-                lista.append(obj.idPaquete)
-        print(lista)
-        listaPaquetes = Paquete.objects.filter(idPaquete__in = lista)
-        return listaPaquetes
+            # lista de paquetes con mejor promedio Score
+            r2 = Rating.objects.all().values('paquete_rating','paquete_rating__tituloPaquete','paquete_rating__precioPaquete', 'paquete_rating__idPaquete').filter(estadoRating = True, paquete_rating__estadoPaquete = True).annotate(promedio = models.Sum('scoreRating')/Count('paquete_rating__tituloPaquete')).order_by('-promedio')[:2]
+            for obj in r2:
+                if  obj['paquete_rating__idPaquete'] not in lista:
+                    lista.append(obj['paquete_rating__idPaquete'])
+            #lista de paquetes mas visitados
+            r3 = Paquete.objects.filter(estadoPaquete = True).order_by('-visitasPaquete')[:2]
+            for obj in r3:
+                if  obj.idPaquete not in lista:
+                    lista.append(obj.idPaquete)
+                
+            #lista de paquetes mas reservados
+            r4 = Reservacion.objects.all().values('paquete_reservacion', 'paquete_reservacion__idPaquete').annotate(total=Count('usuario_Reservacion')).order_by('-total')[:2]
+            for obj in r4:
+                if  obj['paquete_reservacion__idPaquete'] not in lista:
+                    lista.append(obj['paquete_reservacion__idPaquete'])
+            #lista de recien añadidos
+            r5 = Paquete.objects.filter(estadoPaquete = True).order_by('-fechaCreacionPaquete')[:1]
+            for obj in r5:
+                if  obj.idPaquete not in lista:
+                    lista.append(obj.idPaquete)
+            listaPaquetes = Paquete.objects.filter(idPaquete__in = lista)
+            return listaPaquetes
+        else:
+            listaPaquetes = Paquete.objects.none()
+            userID = self.request.user.id
+            visitados = VisitaUsuario.objects.get(usuario_visitas=userID)
+            paquetes = visitados.paquete_visitaUsuario.all()
+            if os.path.exists('./dataPackage.csv'):
+                with open('C:\\Users\\georg\OneDrive - Universidad Privada del Norte\\_\\Proyecto\\dataPackage.csv', encoding="utf-8") as f:
+                    transactions = load_transactions(f, delimiter=",")
+                    results = list(apriori(transactions, min_confidence=0.8, min_length=2, min_lift=2.3))
+                recomendados = []
+                if paquetes.exists():
+                    for p in paquetes:
+                        for item in results:
+                            # first index of the inner list
+                            # Contains base item and add item
+                            pair = item[0] 
+                            items = [x for x in pair]
+                            if items[0] == p.tituloPaquete and len(recomendados) <= 9:
+                                recomendados.append(items[1])
+                                print("Rule: " + items[0] + " -> " + items[1])
+                            
+                for obj in Paquete.objects.filter(estadoPaquete = True):
+                    for t in recomendados:
+                        if obj.tituloPaquete == t:
+                            listaPaquetes |= Paquete.objects.filter(pk=obj.pk)
+            return listaPaquetes
+                    
+            
+
+        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form_rating'] = Form_RegistroRating()
@@ -124,22 +155,56 @@ class PaquetesAllListView(ListView):
 
 
 class DetallePaqueteDetailView(DetailView):
-    # model = DetallePaquete
     template_name = "page/detallePaquete.html"
     model = Paquete
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         self.request.session['paqueteID'] = self.object.pk
-        print(str(self.request.session.get('paqueteID')) +'IDPAQUETE')
         obj = Paquete.objects.get(idPaquete=self.object.pk)
         num_visits =  obj.visitasPaquete #self.request.session.get('num_visits', 0)
         self.request.session['num_visits'] = num_visits + 1
         Paquete.objects.filter(idPaquete=self.object.pk).update(visitasPaquete=self.request.session['num_visits'])
+        if not(str(self.request.user) == 'AnonymousUser'):
+            visita = VisitaUsuario.objects.get(usuario_visitas=self.request.user.id)
+            paquetes = visita.paquete_visitaUsuario.all()
+            if paquetes.exists():
+                for p in paquetes:
+                    if obj.idPaquete == p.idPaquete:
+                        break
+                    else:
+                        visita.paquete_visitaUsuario.add(obj)
+            else:
+                visita.paquete_visitaUsuario.add(obj)
         context['listaDetalles'] = DetallePaquete.objects.filter(paquete_detallePaquete = self.object.pk)
         context['page_title'] = 'Detalle del Paquete'
-        context['condiciones'] = Paquete.objects.values('condicion_paquete').filter(estadoPaquete=True)
-        # print(context['condiciones'])
+        context['condiciones'] = obj.condicion_paquete.all()
+        noCondiciones = Condicion.objects.none()
+        for c in Condicion.objects.all():
+            band = False
+            for n in context['condiciones']:
+                if c.idCondicion == n.idCondicion:
+                    band = True
+                    break
+            if not(band):
+                noCondiciones |= Condicion.objects.filter(pk=c.pk)
+        context['noCondiciones'] = noCondiciones
+        
+        # try:
+        #     persona = Persona.objects.get(ci="12345678901")
+        # except Persona.DoesNotExist:
+        #     # entrará aqui cuando no exista ningun elemento
+        #     # que coincida con la busqueda
+        #     pass
+        # except Persona.MultipleObjectsReturned:
+        #     # entrará aqui cuando se haya encontrado más de un
+        #     # objeto que coincida
+        #     pass
+        # through_model = VisitaUsuario.paquete_visitaUsuario.through
+        # through_model.objects.bulk_create([
+        #     through_model(photo_id=pk, photostream_id=for_classmates.pk) 
+        #         for pk in childhood_photos.values_list('pk', flat=True)
+        # ])
         return context
 
 class Conocenos(TemplateView):
@@ -180,7 +245,6 @@ class ReservacionCreateView(CreateView):
         context["habitaciones"] = HABITACIONES
         context["adultos"] = ADULTOS
         context["niños"] = NIÑOS
-        print(str(self.request.session.get('paqueteID')) +' IDPAQUETE')
         context["paquete"] = Paquete.objects.get(idPaquete= self.request.session.get('paqueteID'))
         # form_class = self.get_form_class()
         # form = self.get_form(form_class)
@@ -198,17 +262,16 @@ class ReservacionCreateView(CreateView):
         form.fields['paquete_reservacion'].initial = obj
         form.fields['precioPaquete'].initial = obj.precioPaquete
         form.fields['usuario_Reservacion'].initial = user
-        print(request.user.id)
         return self.render_to_response(
                     self.get_context_data(form=form))
     def post(self, request, *args, **kwargs):
-           self.object = None
-           form_class = self.get_form_class()
-           form = self.get_form(form_class)
-           if (form.is_valid()):
-               return self.form_valid(form)
-           else:
-               return self.form_invalid(form)
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if (form.is_valid()):
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def form_valid(self, form):
         self.object = form.save()
@@ -500,6 +563,26 @@ class UsuarioCreateView(CreateView):
         return self.render_to_response(
             self.get_context_data(form=form, new_number=new_number, nameOfUser=nameOfUser))
 
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if (form.is_valid()):
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+    def form_valid(self, form):
+        self.object = form.save()
+        username = form.cleaned_data['username']
+        print(username)
+        # password = form.cleaned_data['password1']
+        usuario = Usuario.objects.get(username=username)
+        VisitaUsuario.objects.create(usuario_visitas=usuario)
+        return HttpResponseRedirect(self.get_success_url())
+    def form_invalid(self, form):
+        return self.render_to_response(
+            self.get_context_data(form=form))
+
 class UsuarioUpdateView(UpdateView):
     model = Usuario
     template_name = "management/registrarUsuario.html"
@@ -717,54 +800,67 @@ class RecomendacionPersonalizada(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(RecomendacionPersonalizada, self).get_context_data(**kwargs)
         context['page_title'] = 'Recomendacion Personalizada'
-        # store_data = pd.read_csv('C:\\Users\\georg\OneDrive - Universidad Privada del Norte\\Libre\\store_data.csv',header=None)
-        # records = []
-        # j = 0
-        # for i in range(0, 7501):
-        #     records.append([str(store_data.values[i,j]) for j in range(0, 20)])
-        #     if i == 10:
-        #         break
-        #     j=j+1
-        # for item in records:
-        #     print(item)
-        #-----------------------------
+        # with open('C:\\Users\\georg\OneDrive - Universidad Privada del Norte\\Libre\\data1.csv') as f:
+        #     transactions = load_transactions(f, delimiter=",")
+        #     results = list(apriori(transactions, min_confidence=0.8))
         
-        # n = Paquete.objects.filter(estadoPaquete=True).count()
-        
+        # # print(results)
+        # context['tabla'] = results
         paquetes = Paquete.objects.filter(estadoPaquete=True)
-        users = Usuario.objects.filter(is_active= True)
-        fila1 = []
-        fila2 = []
-        for item in users:
-            fila1.append(item)
-            
-        for item in paquetes:
-            fila2.append(item)
-            print(item)
+        users = Usuario.objects.filter(is_active=True)
         tabla = []
-        tabla.append(fila1)
-        tabla.append(fila2)
-        print(tabla)
-        # association_rules = apriori(records, min_support=0.0045, min_confidence=0.2, min_lift=3, min_length=2)
-        # association_results = list(association_rules)
-        # for item in association_results:
+        i=0
+        for u in users:
+            fila=[]
+            visitas = VisitaUsuario.objects.get(usuario_visitas=u.id)
+            j=0
+            for p in paquetes:
+                if j < 20:
+                    band = False
+                    for v in visitas.paquete_visitaUsuario.all():
+                        if p.idPaquete == v.idPaquete:
+                            band=True
+                            break
+                    if band:
+                        fila.append(p.tituloPaquete)
+                    # else:
+                    #     fila.append('')
+                    j=j+1
+                
+            tabla.append(fila)
+            i=i+1
+        context['tabla'] = tabla
+        if os.path.exists('./dataPackage.csv'):
+            # u.replace(u'\u2013', '-').encode('latin-1') 
+            os.remove('dataPackage.csv')
+            df = pd.DataFrame(tabla)
+            df.to_csv('dataPackage.csv', encoding='utf-8', index=False)
+        else:
+            df = pd.DataFrame(tabla)
+            df.to_csv('dataPackage.csv', encoding='utf-8', index=False)
+        
+        with open('C:\\Users\\georg\OneDrive - Universidad Privada del Norte\\_\\Proyecto\\dataPackage.csv', encoding="utf-8") as f:
+            transactions = load_transactions(f, delimiter=",")
+            #RECOMENDACION ALGORITMO
+            results = list(apriori(transactions, min_confidence=0.8, min_length=2, min_lift=2.3))
+        context['tabla'] = results
+        for item in results:
 
-        #     # first index of the inner list
-        #     # Contains base item and add item
-        #     pair = item[0] 
-        #     items = [x for x in pair]
-        #     print("Rule: " + items[0] + " -> " + items[1])
+            # first index of the inner list
+            # Contains base item and add item
+            pair = item[0] 
+            items = [x for x in pair]
+            print("Rule: " + items[0] + " -> " + items[1])
 
-        #     #second index of the inner list
-        #     print("Support: " + str(item[1]))
+            #second index of the inner list
+            print("Support: " + str(item[1]))
 
-        #     #third index of the list located at 0th
-        #     #of the third index of the inner list
+            #third index of the list located at 0th
+            #of the third index of the inner list
 
-        #     print("Confidence: " + str(item[2][0][2]))
-        #     print("Lift: " + str(item[2][0][3]))
-        #     print("=====================================")
-        #print(store_data.head())
+            print("Confidence: " + str(item[2][0][2]))
+            print("Lift: " + str(item[2][0][3]))
+            print("=====================================")
         return context
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)

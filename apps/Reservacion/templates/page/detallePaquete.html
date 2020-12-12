@@ -130,11 +130,7 @@
                         <div class="col-md-8">
                             <ol>
                                 {% for obj in condiciones %}
-                                
-                                    {% if obj.tipoPaquete == i %}
-                                        <li>{{obj.descripcionCondicion}} </li>
-                                    {% endif %}
-                                    
+                                    <li>{{obj.descripcionCondicion}} </li>
                                 {% endfor %}
                             </ol>
                             <!-- <ul>
@@ -157,12 +153,8 @@
                         </aside>
                         <div class="col-md-8">
                             <ol>
-                                {% for obj in condiciones %}
-                                
-                                    {% if obj.tipoPaquete == n %}
-                                        <li>{{obj.descripcionCondicion}} </li>
-                                    {% endif %}
-                                    
+                                {% for obj in noCondiciones %}
+                                    <li>{{obj.descripcionCondicion}} </li>
                                 {% endfor %}
                             </ol>
                             <!-- <ul>

@@ -8,6 +8,14 @@ from .models import *
 
 from apps.Reservacion.tuplas import *
 
+class VisitaUsuarioForm(forms.ModelForm):
+    usuario_visitas = forms.ModelChoiceField(label='Visitas del Usuario', queryset=Usuario.objects.filter(is_active=True), widget=forms.SelectMultiple(attrs={'class':'form-control'}))
+    paquete_visitaUsuario = forms.MultipleChoiceField(label='Paquetes Visitados', choices=Paquete.objects.filter(estadoPaquete=True), widget=forms.SelectMultiple(attrs={'class':'form-control' }))
+    class Meta:
+        model = VisitaUsuario
+        fields = ("usuario_visitas","paquete_visitaUsuario")
+
+
 class Form_BusquedaPaquete(forms.Form):
     busquedaPaquete = forms.CharField(label=False, initial='', widget=forms.TextInput(attrs= {'class':'form-control form-control-navbar','id':'busquedaPaquete', 'name':'busquedaPaquete', 'type':'search', 'placeholder':'Buscar un Paquete', 'aria-label':'Search'}))
     # def __init__(self, *args, **kwargs):
